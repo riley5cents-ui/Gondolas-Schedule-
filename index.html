@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gondolas Schedule</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.7.0/dist/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#07101e;color:#dce8f5;font-family:'Outfit',system-ui,sans-serif;min-height:100vh}
+::-webkit-scrollbar{width:4px;height:4px;background:transparent}
+::-webkit-scrollbar-thumb{background:#1a2e46;border-radius:2px}
+#app{max-width:480px;margin:0 auto;padding-bottom:24px}
+.app-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;
+  border-bottom:1px solid #0e1c2e;background:#050e1a;gap:8px;position:sticky;top:0;z-index:100}
+.app-header h1{font-size:13px;font-weight:600;color:#c8d8f0;letter-spacing:.3px;display:flex;align-items:center;gap:6px}
+.app-header .sub{font-size:10px;color:#1e3a5a;font-family:'JetBrains Mono',monospace;margin-top:1px}
+select{background:#0d1929;border:1px solid #1a2e46;color:#7aa8d0;font-size:11px;
+  padding:4px 8px;border-radius:6px;cursor:pointer;font-family:'Outfit',sans-serif;max-width:150px;outline:none}
+select:focus{border-color:#2a4a6a}
+.hint{font-size:10px;color:#1a3050;font-style:italic;text-align:right;padding:4px 14px 2px}
+
+/* ── WEEK TABS (calendar style) ── */
+.week-tabs{display:flex;gap:6px;padding:8px 12px;border-bottom:1px solid #0a1828;
+  background:#050e1a;position:sticky;top:52px;z-index:95}
+.wtab{flex:1;padding:6px 2px 7px;border-radius:8px;border:1px solid #1a2e46;
+  background:transparent;cursor:pointer;transition:background .15s,border-color .15s;text-align:center}
+.wtab:hover:not(.active){background:#0a1626;border-color:#243c5a}
+.wtab.active{background:rgba(59,130,246,0.09);border-color:rgba(59,130,246,0.32)}
+.wtab-month{font-size:8.5px;letter-spacing:1.4px;color:#1e3a5a;font-family:'JetBrains Mono',monospace;
+  font-weight:600;margin-bottom:5px;text-transform:uppercase}
+.wtab.active .wtab-month{color:#3a6a9a}
+.wtab-days{display:flex;justify-content:space-evenly;padding:0 2px}
+.wtab-day{display:flex;flex-direction:column;align-items:center;gap:3px}
+.wtab-dl{font-size:8px;color:#1a3050;font-family:'JetBrains Mono',monospace;line-height:1}
+.wtab-dn{font-size:9.5px;font-weight:500;color:#2d4a6a;font-family:'JetBrains Mono',monospace;line-height:1}
+.wtab.active .wtab-dl{color:#1e3a5a}
+.wtab.active .wtab-dn{color:#60a5fa}
+
+/* ── WEEK VIEW ── */
+.week-header{display:flex;border-bottom:1px solid #0a1828}
+.week-header .axis-spacer{flex-shrink:0}
+.wk-day-hdr{flex:1;text-align:center;padding:5px 0 4px;cursor:pointer;
+  border-left:1px solid #0a1828;transition:background .12s}
+.wk-day-hdr:hover{background:#0d1929}
+.wk-day-hdr.working{background:rgba(202,138,4,0.08)}
+.wk-day-hdr .day-name{font-size:11px;font-weight:500;color:#2d4a6a}
+.wk-day-hdr.working .day-name{color:#d97706;font-weight:600}
+.wk-day-hdr .day-dot{width:4px;height:4px;border-radius:50%;background:#ca8a04;margin:2px auto 0}
+.week-grid{display:flex;position:relative}
+.wk-axis{flex-shrink:0;position:relative}
+.wk-axis-lbl{position:absolute;right:4px;font-size:10px;color:#1a3050;
+  font-family:'JetBrains Mono',monospace;transform:translateY(-50%);line-height:1;white-space:nowrap}
+.week-cols{flex:1;display:flex;position:relative}
+.wk-gridline{position:absolute;left:0;right:0;border-top:1px solid #0a1828;pointer-events:none}
+.wk-pmline{position:absolute;left:0;right:0;border-top:1px solid rgba(202,138,4,0.2);pointer-events:none}
+.wk-day-col{flex:1;display:flex;cursor:pointer;position:relative;border-left:1px solid #0a1828}
+.wk-sub{flex:1;position:relative;overflow:hidden}
+.wk-bar{position:absolute;left:0;right:0}
+.week-legend{display:flex;justify-content:center;align-items:center;gap:14px;
+  padding:8px 0;border-top:1px solid #0a1828}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:#2d4a6a}
+.legend-swatch{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+
+/* ── DAY VIEW ── */
+.day-strip{display:flex;align-items:center;padding:7px 8px;
+  border-bottom:1px solid #0a1828;gap:4px;overflow-x:auto;
+  background:#050e1a;flex-wrap:nowrap;position:sticky;top:110px;z-index:90}
+.day-strip::-webkit-scrollbar{height:0}
+.day-btn{cursor:pointer;font-size:11px;padding:3px 9px;border-radius:5px;
+  border:1px solid #0e1c2e;background:transparent;color:#2d4a6a;
+  font-family:'Outfit',sans-serif;font-weight:400;flex-shrink:0;white-space:nowrap;
+  transition:background .12s,color .12s}
+.day-btn:hover{background:#0d1929;color:#4a7a9b}
+.day-btn.active{background:rgba(202,138,4,0.18);border-color:rgba(202,138,4,0.5);
+  color:#d97706;font-weight:600}
+.day-btn.working{border-color:rgba(202,138,4,0.3);color:#b45309;opacity:.75}
+.back-btn{cursor:pointer;font-size:11px;padding:4px 10px;border-radius:6px;
+  border:1px solid #1a2e46;background:transparent;color:#3b82f6;
+  font-family:'Outfit',sans-serif;font-weight:500;flex-shrink:0;transition:background .12s}
+.back-btn:hover{background:#0d1929}
+.day-title{padding:8px 14px 4px}
+.day-title h2{font-size:16px;font-weight:600;color:#c8d8f0}
+.col-hdrs{display:flex;padding:0 8px 6px;gap:6px}
+.col-hdr{flex:1;text-align:center;font-size:11px;font-weight:600;letter-spacing:.7px;
+  padding:4px 0;border-radius:4px;display:flex;align-items:center;justify-content:center;gap:4px}
+.col-hdr.dt{color:#60a5fa;background:rgba(59,130,246,0.1)}
+.col-hdr.sb{color:#f87171;background:rgba(239,68,68,0.1)}
+.time-grid{display:flex;position:relative}
+.t-axis{flex-shrink:0;position:relative}
+.t-axis-lbl{position:absolute;right:5px;font-size:11px;color:#1e3a5a;
+  font-family:'JetBrains Mono',monospace;transform:translateY(-50%);line-height:1;white-space:nowrap}
+.t-axis-pm{position:absolute;right:4px;font-size:10px;color:rgba(202,138,4,0.7);
+  font-family:'JetBrains Mono',monospace;font-weight:600;transform:translateY(-50%);line-height:1}
+.t-content{flex:1;position:relative;display:flex;gap:6px;padding-right:6px}
+.t-hrline{position:absolute;left:0;right:0;border-top:1px solid #0a1828;pointer-events:none}
+.t-halfline{position:absolute;left:0;right:0;border-top:1px dashed rgba(14,28,46,0.7);pointer-events:none}
+.t-pmline{position:absolute;left:0;right:0;border-top:1px solid rgba(202,138,4,0.25);pointer-events:none}
+.loc-col{flex:1;position:relative}
+.shift{position:absolute;border-radius:0 4px 4px 0;padding:2px 5px;overflow:hidden;box-sizing:border-box}
+.shift-name{font-size:11px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.shift-stn{font-size:10px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.7;margin-top:1px}
+.shift.dt{background:rgba(59,130,246,0.14);border:.5px solid rgba(59,130,246,0.5);border-left:2.5px solid #3b82f6}
+.shift.dt .shift-name{color:#93c5fd}
+.shift.dt .shift-stn{color:#60a5fa}
+.shift.sb{background:rgba(239,68,68,0.13);border:.5px solid rgba(239,68,68,0.5);border-left:2.5px solid #ef4444}
+.shift.sb .shift-name{color:#fca5a5}
+.shift.sb .shift-stn{color:#f87171}
+.shift.me{background:rgba(202,138,4,0.22);border:.5px solid rgba(202,138,4,0.7);border-left:2.5px solid #ca8a04;z-index:20!important}
+.shift.me .shift-name{color:#fbbf24;font-weight:600}
+.shift.me .shift-stn{color:#fde68a}
+.shift.open{background:rgba(55,65,81,0.15);border:.5px solid rgba(55,65,81,0.4);border-left:2.5px solid #4b5563}
+.shift.open .shift-name{color:#6b7280}
+.shift.open .shift-stn{color:#6b7280}
+.footer{display:flex;border-top:1px solid #0a1828;margin-top:8px;background:#050e1a}
+.footer-cell{flex:1;padding:12px 0;text-align:center}
+.footer-cell:first-child{border-right:1px solid #0a1828}
+.footer-lbl{font-size:11px;font-weight:600;letter-spacing:.5px;margin-bottom:8px}
+.footer-lbl.dt{color:#60a5fa}
+.footer-lbl.sb{color:#f87171}
+.footer-nums{display:flex;justify-content:center;gap:20px}
+.footer-num{text-align:center}
+.footer-period{font-size:11px;color:#1e3a5a;margin-bottom:2px;font-family:'JetBrains Mono',monospace}
+.footer-val{font-size:28px;font-weight:600;color:#c8d8f0;font-family:'JetBrains Mono',monospace;line-height:1.1;font-variant-numeric:tabular-nums}
+
+/* ── SHIFT POPUP ── */
+#shift-popup{position:fixed;z-index:300;background:#0c1a2e;border:1px solid #1e3a5a;
+  border-radius:10px;padding:11px 14px;min-width:158px;max-width:230px;
+  box-shadow:0 6px 24px rgba(0,0,0,0.6);pointer-events:none;
+  opacity:0;transition:opacity .14s,transform .14s;transform:scale(0.95);display:none}
+#shift-popup.visible{opacity:1;transform:scale(1);pointer-events:auto}
+.sp-name{font-size:13px;font-weight:600;margin-bottom:6px;line-height:1.3}
+.sp-name.dt{color:#93c5fd}
+.sp-name.sb{color:#fca5a5}
+.sp-name.me{color:#fbbf24}
+.sp-name.open{color:#9ca3af}
+.sp-row{display:flex;align-items:center;gap:6px;margin-top:4px}
+.sp-icon{font-size:11px;color:#1e3a5a;flex-shrink:0;width:14px;text-align:center}
+.sp-text{font-size:11px;color:#4a7a9b;font-family:'JetBrains Mono',monospace;line-height:1.3}
+.sp-stn{font-size:11px;color:#2d5a7a;font-style:italic;line-height:1.3}
+.sp-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;
+  letter-spacing:.5px;padding:2px 7px;border-radius:4px;margin-top:6px}
+.sp-badge.dt{color:#60a5fa;background:rgba(59,130,246,0.12);border:1px solid rgba(59,130,246,0.2)}
+.sp-badge.sb{color:#f87171;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.18)}
+.sp-badge.open{color:#6b7280;background:rgba(75,85,99,0.12);border:1px solid rgba(75,85,99,0.2)}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="app-header">
+    <div>
+      <h1><i class="ti ti-calendar" aria-hidden="true"></i> Gondolas Schedule</h1>
+      <div class="sub" id="week-sub"></div>
+    </div>
+    <select id="emp-select"><option value="">&#128100; Who are you?</option></select>
+  </div>
+  <div class="week-tabs" id="week-tabs"></div>
+  <div id="main"></div>
+</div>
+<div id="shift-popup">
+  <div id="sp-name" class="sp-name"></div>
+  <div id="sp-time" class="sp-row">
+    <i class="ti ti-clock sp-icon"></i><span id="sp-time-val" class="sp-text"></span>
+  </div>
+  <div id="sp-stn-row" class="sp-row">
+    <i class="ti ti-tool sp-icon"></i><span id="sp-stn-val" class="sp-stn"></span>
+  </div>
+  <div id="sp-badge" class="sp-badge"></div>
+</div>
+<script>
+const WEEKS=[
+  {
+    label:'May 4–10',range:'May 4 – 10, 2026',month:'MAY',
+    calDays:[{l:'M',n:4},{l:'T',n:5},{l:'W',n:6},{l:'T',n:7},{l:'F',n:8},{l:'S',n:9},{l:'S',n:10}],
+    days:[
+      {k:'05-04',sh:'Mon',lg:'Monday, May 4'},
+      {k:'05-05',sh:'Tue',lg:'Tuesday, May 5'},
+      {k:'05-06',sh:'Wed',lg:'Wednesday, May 6'},
+      {k:'05-07',sh:'Thu',lg:'Thursday, May 7'},
+      {k:'05-08',sh:'Fri',lg:'Friday, May 8'},
+      {k:'05-09',sh:'Sat',lg:'Saturday, May 9'},
+      {k:'05-10',sh:'Sun',lg:'Sunday, May 10'},
+    ],
+    shifts:[
+      {id:1, date:'05-04',name:'Jayson Hill',       s:'10:00',e:'15:30',loc:'dt',stn:'Prep + Grill'},
+      {id:2, date:'05-04',name:'Riley Nicholls',    s:'10:30',e:'15:30',loc:'dt',stn:'Fryer'},
+      {id:3, date:'05-04',name:'Meadow Ingraldi',   s:'10:30',e:'15:30',loc:'dt',stn:'Front'},
+      {id:4, date:'05-04',name:'Grace Lowell',      s:'15:15',e:'20:30',loc:'dt',stn:'Fryer'},
+      {id:5, date:'05-04',name:'Erin Cochran',      s:'15:15',e:'20:30',loc:'dt',stn:'Front'},
+      {id:6, date:'05-04',name:'Melinda Demar',     s:'15:30',e:'20:30',loc:'dt',stn:'Grill'},
+      {id:7, date:'05-05',name:'Jayson Hill',       s:'10:00',e:'15:30',loc:'dt',stn:'Prep + Grill'},
+      {id:8, date:'05-05',name:'Riley Nicholls',    s:'10:30',e:'15:30',loc:'dt',stn:'Fryer'},
+      {id:9, date:'05-05',name:'Meadow Ingraldi',   s:'10:30',e:'15:30',loc:'dt',stn:'Front'},
+      {id:10,date:'05-05',name:'Asialyn Gillen',    s:'15:15',e:'20:30',loc:'dt',stn:'Front'},
+      {id:11,date:'05-05',name:'Raffi Wein',        s:'15:30',e:'20:30',loc:'dt',stn:'Fryer'},
+      {id:12,date:'05-05',name:'Sam Goodell',       s:'15:30',e:'20:30',loc:'dt',stn:'Grill'},
+      {id:13,date:'05-06',name:'Jayson Hill',       s:'10:00',e:'15:30',loc:'dt',stn:'Prep + Grill'},
+      {id:14,date:'05-06',name:'Mike Maetke',       s:'10:30',e:'20:30',loc:'dt',stn:''},
+      {id:15,date:'05-06',name:'Meadow Ingraldi',   s:'10:30',e:'15:30',loc:'dt',stn:'Front'},
+      {id:16,date:'05-06',name:'Grace Lowell',      s:'15:15',e:'20:30',loc:'dt',stn:'Front'},
+      {id:17,date:'05-06',name:'Autumn Vize',       s:'15:15',e:'20:30',loc:'dt',stn:'Expo'},
+      {id:18,date:'05-06',name:'Raffi Wein',        s:'15:30',e:'20:30',loc:'dt',stn:'Grill'},
+      {id:19,date:'05-07',name:'Jayson Hill',       s:'10:00',e:'15:30',loc:'dt',stn:'Prep + Fryer'},
+      {id:20,date:'05-07',name:'Mike Maetke',       s:'10:30',e:'20:30',loc:'dt',stn:'Grill'},
+      {id:21,date:'05-07',name:'Riley Nicholls',    s:'10:30',e:'15:30',loc:'dt',stn:'Front'},
+      {id:22,date:'05-07',name:'Erin Cochran',      s:'15:15',e:'20:30',loc:'dt',stn:'Expo'},
+      {id:23,date:'05-07',name:'Asialyn Gillen',    s:'15:15',e:'20:30',loc:'dt',stn:'Front'},
+      {id:24,date:'05-07',name:'Adam Jorgenson',    s:'15:30',e:'20:30',loc:'dt',stn:'Fryer'},
+      {id:25,date:'05-08',name:'Jayson Hill',       s:'10:00',e:'14:00',loc:'dt',stn:'Prep'},
+      {id:26,date:'05-08',name:'Mike Maetke',       s:'10:30',e:'20:30',loc:'dt',stn:'Fryer'},
+      {id:27,date:'05-08',name:'Melinda Demar',     s:'10:30',e:'20:30',loc:'dt',stn:'Grill'},
+      {id:28,date:'05-08',name:'Meadow Ingraldi',   s:'10:30',e:'20:30',loc:'dt',stn:'Front/Expo'},
+      {id:29,date:'05-08',name:'Asialyn Gillen',    s:'15:15',e:'20:30',loc:'dt',stn:'Front'},
+      {id:30,date:'05-08',name:'Claire Phillips',   s:'15:30',e:'20:30',loc:'dt',stn:'Expo/Prep'},
+      {id:31,date:'05-09',name:'Hadley Butterfield',s:'10:30',e:'15:30',loc:'dt',stn:'Front/Expo/Prep'},
+      {id:32,date:'05-09',name:'Mike Maetke',       s:'10:30',e:'20:30',loc:'dt',stn:'Grill'},
+      {id:33,date:'05-09',name:'Meadow Ingraldi',   s:'10:30',e:'20:30',loc:'dt',stn:'Front/Train Hadley'},
+      {id:34,date:'05-09',name:'Melinda Demar',     s:'10:30',e:'20:30',loc:'dt',stn:'Fryer'},
+      {id:35,date:'05-09',name:'Nick Haggett',      s:'15:30',e:'20:30',loc:'dt',stn:'Prep'},
+      {id:36,date:'05-09',name:'Joria Benjamin',    s:'15:30',e:'20:30',loc:'dt',stn:'Expo/Prep'},
+      {id:37,date:'05-10',name:'Nick Haggett',      s:'10:30',e:'15:30',loc:'dt',stn:'Prep'},
+      {id:38,date:'05-10',name:'Claire Phillips',   s:'10:30',e:'20:30',loc:'dt',stn:'Front'},
+      {id:39,date:'05-10',name:'Melinda Demar',     s:'10:30',e:'20:30',loc:'dt',stn:'Grill'},
+      {id:40,date:'05-10',name:'Grace Lowell',      s:'10:30',e:'20:30',loc:'dt',stn:'Fryer'},
+    ]
+  },
+  {
+    label:'May 11–17',range:'May 11 – 17, 2026',month:'MAY',
+    calDays:[{l:'M',n:11},{l:'T',n:12},{l:'W',n:13},{l:'T',n:14},{l:'F',n:15},{l:'S',n:16},{l:'S',n:17}],
+    days:[
+      {k:'05-11',sh:'Mon',lg:'Monday, May 11'},
+      {k:'05-12',sh:'Tue',lg:'Tuesday, May 12'},
+      {k:'05-13',sh:'Wed',lg:'Wednesday, May 13'},
+      {k:'05-14',sh:'Thu',lg:'Thursday, May 14'},
+      {k:'05-15',sh:'Fri',lg:'Friday, May 15'},
+      {k:'05-16',sh:'Sat',lg:'Saturday, May 16'},
+      {k:'05-17',sh:'Sun',lg:'Sunday, May 17'},
+    ],
+    shifts:[
+      {id:1, date:'05-11',name:'Jayson Hill',       s:'10:00',e:'15:30',loc:'dt',stn:'Prep + Fryer'},
+      {id:2, date:'05-11',name:'Riley Nicholls',    s:'10:30',e:'20:30',loc:'dt',stn:'Grill'},
+      {id:3, date:'05-11',name:'Melinda Demar',     s:'15:30',e:'20:30',loc:'dt',stn:'Grill'},
+      {id:4, date:'05-11',name:'Grace Lowell',      s:'15:30',e:'20:30',loc:'dt',stn:'Front'},
+      {id:5, date:'05-12',name:'Jayson Hill',       s:'10:00',e:'15:30',loc:'dt',stn:'Fryer/Grill'},
+      {id:6, date:'05-12',name:'Claire Phillips',   s:'10:30',e:'20:30',loc:'dt',stn:'Front/Fryer'},
+      {id:7, date:'05-12',name:'Riley Nicholls',    s:'10:30',e:'20:30',loc:'dt',stn:'Grill'},
+      {id:8, date:'05-12',name:'Meadow Ingraldi',   s:'15:30',e:'20:30',loc:'dt',stn:'Front'},
+      {id:9, date:'05-13',name:'Jayson Hill',       s:'10:00',e:'20:30',loc:'dt',stn:'Prep/Fryer'},
+      {id:10,date:'05-13',name:'Mike Maetke',       s:'10:30',e:'20:30',loc:'dt',stn:'Grill'},
+      {id:11,date:'05-13',name:'Meadow Ingraldi',   s:'10:30',e:'20:30',loc:'dt',stn:'Front'},
+      {id:12,date:'05-14',name:'Jayson Hill',       s:'10:00',e:'15:30',loc:'dt',stn:'Fryer'},
+      {id:13,date:'05-14',name:'Meadow Ingraldi',   s:'10:30',e:'15:30',loc:'dt',stn:'Front'},
+      {id:14,date:'05-14',name:'Mike Maetke',       s:'10:30',e:'20:30',loc:'dt',stn:'Grill/Fryer'},
+      {id:15,date:'05-14',name:'Nick Haggett',      s:'10:30',e:'15:30',loc:'sb',stn:'Prep'},
+      {id:16,date:'05-14',name:'Melinda Demar',     s:'15:00',e:'20:30',loc:'dt',stn:'Grill'},
+      {id:17,date:'05-14',name:'Claire Phillips',   s:'15:30',e:'20:30',loc:'dt',stn:'Front'},
+      {id:18,date:'05-15',name:'Mike Maetke',       s:'10:30',e:'20:30',loc:'dt',stn:'Grill'},
+      {id:19,date:'05-15',name:'Riley Nicholls',    s:'10:30',e:'15:30',loc:'dt',stn:'Front'},
+      {id:20,date:'05-15',name:'Melinda Demar',     s:'10:30',e:'20:30',loc:'dt',stn:'Fryer'},
+      {id:21,date:'05-15',name:'Nick Haggett',      s:'10:30',e:'15:30',loc:'sb',stn:'Prep'},
+      {id:22,date:'05-15',name:'Zab Whitlock',      s:'11:00',e:'15:30',loc:'sb',stn:'Front'},
+      {id:23,date:'05-15',name:'Joria Benjamin',    s:'11:00',e:'15:30',loc:'sb',stn:'Creemee'},
+      {id:24,date:'05-15',name:'Adam Jorgenson',    s:'11:00',e:'20:30',loc:'sb',stn:'Fryer'},
+      {id:25,date:'05-15',name:'Grace Lowell',      s:'15:30',e:'20:30',loc:'sb',stn:'Expo'},
+      {id:26,date:'05-15',name:'Claire Phillips',   s:'15:30',e:'20:30',loc:'dt',stn:'Front'},
+      {id:27,date:'05-15',name:'Jayson Hill',       s:'15:30',e:'20:30',loc:'dt',stn:'Prep'},
+      {id:28,date:'05-15',name:'Vanessa Severcool', s:'15:30',e:'20:30',loc:'sb',stn:'Grill'},
+      {id:29,date:'05-15',name:'Asialyn Gillen',    s:'15:30',e:'20:30',loc:'sb',stn:'Front'},
+      {id:30,date:'05-15',name:'Liam Burbank',      s:'15:30',e:'20:30',loc:'sb',stn:'Grill Training'},
+      {id:31,date:'05-15',name:'Joria Benjamin',    s:'15:30',e:'20:30',loc:'sb',stn:'Creemee'},
+      {id:32,date:'05-16',name:'Melinda Demar',     s:'10:30',e:'20:30',loc:'dt',stn:'Grill'},
+      {id:33,date:'05-16',name:'Meadow Ingraldi',   s:'10:30',e:'20:30',loc:'dt',stn:'Front'},
+      {id:34,date:'05-16',name:'Mike Maetke',       s:'10:30',e:'20:30',loc:'dt',stn:'Fryer'},
+      {id:35,date:'05-16',name:'Journey Hutches',   s:'11:00',e:'15:30',loc:'sb',stn:'Creemee'},
+      {id:36,date:'05-16',name:'Alex Whitley',      s:'11:00',e:'20:30',loc:'sb',stn:''},
+      {id:37,date:'05-16',name:'Joria Benjamin',    s:'11:00',e:'20:30',loc:'sb',stn:'Creemee'},
+      {id:38,date:'05-16',name:'Grace Lowell',      s:'11:00',e:'20:30',loc:'sb',stn:'Expo'},
+      {id:39,date:'05-16',name:'Adam Jorgenson',    s:'11:00',e:'20:30',loc:'sb',stn:''},
+      {id:40,date:'05-16',name:'Claire Phillips',   s:'15:30',e:'20:30',loc:'dt',stn:'Expo'},
+      {id:41,date:'05-16',name:'Vanessa Severcool', s:'15:30',e:'20:30',loc:'sb',stn:'Expo'},
+      {id:42,date:'05-16',name:'Zab Whitlock',      s:'15:30',e:'20:30',loc:'sb',stn:''},
+      {id:43,date:'05-17',name:'Riley Nicholls',    s:'10:30',e:'15:30',loc:'dt',stn:'Grill'},
+      {id:44,date:'05-17',name:'Melinda Demar',     s:'10:30',e:'20:30',loc:'dt',stn:'Fryer'},
+      {id:45,date:'05-17',name:'Claire Phillips',   s:'10:30',e:'20:30',loc:'dt',stn:'Front'},
+      {id:46,date:'05-17',name:'Adam Jorgenson',    s:'11:00',e:'20:30',loc:'sb',stn:''},
+      {id:47,date:'05-17',name:'Erin Cochran',      s:'11:00',e:'20:30',loc:'sb',stn:'Expo'},
+      {id:48,date:'05-17',name:'Asialyn Gillen',    s:'11:00',e:'20:30',loc:'sb',stn:'Front'},
+      {id:49,date:'05-17',name:'Grace Lowell',      s:'11:00',e:'20:30',loc:'sb',stn:'Creemee'},
+      {id:50,date:'05-17',name:'Alex Whitley',      s:'11:00',e:'20:30',loc:'sb',stn:''},
+      {id:51,date:'05-17',name:'Jayson Hill',       s:'15:30',e:'20:30',loc:'dt',stn:'Grill'},
+    ]
+  },
+  {
+    label:'May 18–24',range:'May 18 – 24, 2026',month:'MAY',
+    calDays:[{l:'M',n:18},{l:'T',n:19},{l:'W',n:20},{l:'T',n:21},{l:'F',n:22},{l:'S',n:23},{l:'S',n:24}],
+    days:[
+      {k:'05-18',sh:'Mon',lg:'Monday, May 18'},
+      {k:'05-19',sh:'Tue',lg:'Tuesday, May 19'},
+      {k:'05-20',sh:'Wed',lg:'Wednesday, May 20'},
+      {k:'05-21',sh:'Thu',lg:'Thursday, May 21'},
+      {k:'05-22',sh:'Fri',lg:'Friday, May 22'},
+      {k:'05-23',sh:'Sat',lg:'Saturday, May 23'},
+      {k:'05-24',sh:'Sun',lg:'Sunday, May 24'},
+    ],
+    shifts:[
+      {id:1, date:'05-18',name:'Jayson Hill',       s:'10:00',e:'15:30',loc:'dt',stn:'Prep + Fryer'},
+      {id:2, date:'05-18',name:'Riley Nicholls',    s:'10:30',e:'15:30',loc:'dt',stn:'Grill'},
+      {id:3, date:'05-18',name:'Nick Haggett',      s:'10:30',e:'15:30',loc:'sb',stn:''},
+      {id:4, date:'05-18',name:'Meadow Ingraldi',   s:'10:30',e:'20:30',loc:'dt',stn:'Front'},
+      {id:5, date:'05-18',name:'Avianna Wein',      s:'11:00',e:'15:30',loc:'sb',stn:'Front'},
+      {id:6, date:'05-18',name:'Alex Whitley',      s:'11:00',e:'15:30',loc:'sb',stn:'Fryer'},
+      {id:7, date:'05-18',name:'Grace Lowell',      s:'15:30',e:'20:30',loc:'sb',stn:'Creemee'},
+      {id:8, date:'05-18',name:'Hadley Butterfield',s:'15:30',e:'20:30',loc:'sb',stn:'Creemee'},
+      {id:9, date:'05-18',name:'Asialyn Gillen',    s:'15:30',e:'20:30',loc:'sb',stn:'Front'},
+      {id:10,date:'05-18',name:'Vanessa Severcool', s:'15:30',e:'20:30',loc:'sb',stn:'Grill'},
+      {id:11,date:'05-18',name:'Avianna Wein',      s:'15:30',e:'20:30',loc:'sb',stn:'Fryer'},
+      {id:12,date:'05-18',name:'Open Shift',        s:'15:30',e:'20:30',loc:'dt',stn:'Grill',    open:1},
+      {id:13,date:'05-18',name:'Erin Cochran',      s:'15:30',e:'20:30',loc:'dt',stn:'Fryer'},
+      {id:14,date:'05-19',name:'Jayson Hill',       s:'10:00',e:'15:30',loc:'dt',stn:'Prep + Fryer'},
+      {id:15,date:'05-19',name:'Nick Haggett',      s:'10:30',e:'15:30',loc:'sb',stn:''},
+      {id:16,date:'05-19',name:'Riley Nicholls',    s:'10:30',e:'15:30',loc:'dt',stn:'Grill'},
+      {id:17,date:'05-19',name:'Claire Phillips',   s:'10:30',e:'20:30',loc:'dt',stn:'Front/Fryer'},
+      {id:18,date:'05-19',name:'Avianna Wein',      s:'11:00',e:'15:30',loc:'sb',stn:'Front'},
+      {id:19,date:'05-19',name:'Hadley Butterfield',s:'15:30',e:'20:30',loc:'sb',stn:'Creemee'},
+      {id:20,date:'05-19',name:'Open Shift',        s:'15:30',e:'20:30',loc:'dt',stn:'Grill',    open:1},
+      {id:21,date:'05-19',name:'Asialyn Gillen',    s:'15:30',e:'20:30',loc:'sb',stn:'Front'},
+      {id:22,date:'05-19',name:'Sam Goodell',       s:'15:30',e:'20:30',loc:'sb',stn:'Grill'},
+      {id:23,date:'05-19',name:'Raffi Wein',        s:'15:30',e:'20:30',loc:'sb',stn:'Fryer'},
+      {id:24,date:'05-19',name:'Meadow Ingraldi',   s:'15:30',e:'20:30',loc:'dt',stn:'Front'},
+      {id:25,date:'05-20',name:'Jayson Hill',       s:'10:00',e:'20:30',loc:'dt',stn:'Prep/Fryer'},
+      {id:26,date:'05-20',name:'Meadow Ingraldi',   s:'10:30',e:'20:30',loc:'dt',stn:'Front'},
+      {id:27,date:'05-20',name:'Mike Maetke',       s:'10:30',e:'20:30',loc:'dt',stn:'Grill'},
+      {id:28,date:'05-20',name:'Nick Haggett',      s:'10:30',e:'15:30',loc:'sb',stn:''},
+      {id:29,date:'05-20',name:'Avianna Wein',      s:'11:00',e:'15:30',loc:'sb',stn:'Front'},
+      {id:30,date:'05-20',name:'Adam Jorgenson',    s:'11:00',e:'15:30',loc:'sb',stn:'Grill'},
+      {id:31,date:'05-20',name:'Grace Lowell',      s:'15:30',e:'20:30',loc:'sb',stn:'Front'},
+      {id:32,date:'05-20',name:'Vanessa Severcool', s:'15:30',e:'20:30',loc:'sb',stn:'Grill'},
+      {id:33,date:'05-20',name:'Autumn Vize',       s:'15:30',e:'20:30',loc:'sb',stn:'Creemee'},
+      {id:34,date:'05-20',name:'Raffi Wein',        s:'15:30',e:'20:30',loc:'sb',stn:'Fryer'},
+      {id:35,date:'05-21',name:'Jayson Hill',       s:'10:00',e:'15:30',loc:'dt',stn:'Fryer'},
+      {id:36,date:'05-21',name:'Nick Haggett',      s:'10:30',e:'15:30',loc:'sb',stn:'Fryer'},
+      {id:37,date:'05-21',name:'Meadow Ingraldi',   s:'10:30',e:'15:30',loc:'dt',stn:'Front'},
+      {id:38,date:'05-21',name:'Mike Maetke',       s:'10:30',e:'20:30',loc:'dt',stn:'Grill'},
+      {id:39,date:'05-21',name:'Riley Nicholls',    s:'11:00',e:'15:30',loc:'sb',stn:'Grill'},
+      {id:40,date:'05-21',name:'Alex Whitley',      s:'11:00',e:'15:30',loc:'sb',stn:'Front Train'},
+      {id:41,date:'05-21',name:'Avianna Wein',      s:'11:00',e:'15:30',loc:'sb',stn:'Train Riley'},
+      {id:42,date:'05-21',name:'Sam Goodell',       s:'15:30',e:'20:30',loc:'sb',stn:'Grill'},
+      {id:43,date:'05-21',name:'Grace Lowell',      s:'15:30',e:'20:30',loc:'sb',stn:'Creemee'},
+      {id:44,date:'05-21',name:'Claire Phillips',   s:'15:30',e:'20:30',loc:'dt',stn:'Front'},
+      {id:45,date:'05-21',name:'Open Shift',        s:'15:30',e:'20:30',loc:'dt',stn:'Front/Fryer',open:1},
+      {id:46,date:'05-21',name:'Raffi Wein',        s:'15:30',e:'20:30',loc:'sb',stn:'Fryer'},
+      {id:47,date:'05-21',name:'Asialyn Gillen',    s:'15:30',e:'20:30',loc:'sb',stn:'Front'},
+      {id:48,date:'05-22',name:'Riley Nicholls',    s:'10:30',e:'15:30',loc:'dt',stn:'Front'},
+      {id:49,date:'05-22',name:'Melinda Demar',     s:'10:30',e:'20:30',loc:'dt',stn:'Fryer'},
+      {id:50,date:'05-22',name:'Nick Haggett',      s:'10:30',e:'15:30',loc:'sb',stn:''},
+      {id:51,date:'05-22',name:'Mike Maetke',       s:'10:30',e:'20:30',loc:'dt',stn:'Grill'},
+      {id:52,date:'05-22',name:'Open Shift',        s:'11:00',e:'15:30',loc:'sb',stn:'Front',     open:1},
+      {id:53,date:'05-22',name:'Adam Jorgenson',    s:'11:00',e:'20:30',loc:'sb',stn:'Grill'},
+      {id:54,date:'05-22',name:'Claire Phillips',   s:'15:30',e:'20:30',loc:'dt',stn:'Front'},
+      {id:55,date:'05-22',name:'Asialyn Gillen',    s:'15:30',e:'20:30',loc:'sb',stn:'Front'},
+      {id:56,date:'05-22',name:'Jayson Hill',       s:'15:30',e:'20:30',loc:'dt',stn:'Prep'},
+      {id:57,date:'05-22',name:'Erin Cochran',      s:'15:30',e:'20:30',loc:'sb',stn:'Creemee'},
+      {id:58,date:'05-22',name:'Grace Lowell',      s:'15:30',e:'20:30',loc:'sb',stn:'Expo'},
+      {id:59,date:'05-22',name:'Joria Benjamin',    s:'15:30',e:'20:30',loc:'sb',stn:'Creemee'},
+      {id:60,date:'05-22',name:'Liam Burbank',      s:'15:30',e:'20:30',loc:'sb',stn:'Fryer'},
+      {id:61,date:'05-23',name:'Melinda Demar',     s:'10:30',e:'20:30',loc:'dt',stn:'Grill'},
+      {id:62,date:'05-23',name:'Mike Maetke',       s:'10:30',e:'20:30',loc:'dt',stn:'Fryer'},
+      {id:63,date:'05-23',name:'Meadow Ingraldi',   s:'10:30',e:'20:30',loc:'dt',stn:'Front'},
+      {id:64,date:'05-23',name:'Open Shift',        s:'11:00',e:'15:30',loc:'sb',stn:'Creemee',   open:1},
+      {id:65,date:'05-23',name:'Liam Burbank',      s:'11:00',e:'20:30',loc:'sb',stn:'Grill'},
+      {id:66,date:'05-23',name:'Adam Jorgenson',    s:'11:00',e:'20:30',loc:'sb',stn:'Fryer'},
+      {id:67,date:'05-23',name:'Alex Whitley',      s:'11:00',e:'20:30',loc:'sb',stn:'Expo'},
+      {id:68,date:'05-23',name:'Joria Benjamin',    s:'11:00',e:'20:30',loc:'sb',stn:'Front'},
+      {id:69,date:'05-23',name:'Claire Phillips',   s:'15:30',e:'20:30',loc:'dt',stn:'Expo'},
+      {id:70,date:'05-23',name:'Open Shift',        s:'15:30',e:'20:30',loc:'sb',stn:'Creemee',   open:1},
+      {id:71,date:'05-24',name:'Riley Nicholls',    s:'10:30',e:'15:30',loc:'dt',stn:'Grill'},
+      {id:72,date:'05-24',name:'Claire Phillips',   s:'10:30',e:'20:30',loc:'dt',stn:'Front'},
+      {id:73,date:'05-24',name:'Melinda Demar',     s:'10:30',e:'20:30',loc:'dt',stn:'Fryer'},
+      {id:74,date:'05-24',name:'Erin Cochran',      s:'11:00',e:'20:30',loc:'sb',stn:'Creemee'},
+      {id:75,date:'05-24',name:'Asialyn Gillen',    s:'11:00',e:'20:30',loc:'sb',stn:'Front'},
+      {id:76,date:'05-24',name:'Adam Jorgenson',    s:'11:00',e:'20:30',loc:'sb',stn:''},
+      {id:77,date:'05-24',name:'Grace Lowell',      s:'11:00',e:'20:30',loc:'sb',stn:'Flex'},
+      {id:78,date:'05-24',name:'Jayson Hill',       s:'15:30',e:'20:30',loc:'dt',stn:'Grill'},
+    ]
+  }
+];
+
+const TS=570,TE=1260,PD=1.3,PW=0.52,PM=930;
+const toM=t=>{const[h,m]=t.split(':').map(Number);return h*60+m;};
+const fmtM=m=>{const h=Math.floor(m/60),mn=m%60,pm=h>=12,dh=h>12?h-12:h===0?12:h;
+  return `${dh}${mn?':'+String(mn).padStart(2,'0'):''}${pm?'p':'a'}`;};
+const TICKS=[];for(let m=TS;m<=TE;m+=30)TICKS.push(m);
+const HTICKS=TICKS.filter(m=>m%60===0);
+
+let state={view:'week',di:0,me:'',week:2};
+function W(){return WEEKS[state.week];}
+function S(){return W().shifts;}
+function D(){return W().days;}
+
+function doLayout(shifts){
+  const ss=[...shifts].map(s=>({...s})).sort((a,b)=>toM(a.s)-toM(b.s));
+  const ends=[];
+  for(const s of ss){
+    const sm=toM(s.s);let c=ends.findIndex(e=>e<=sm);
+    if(c<0)c=ends.length;s._c=c;ends[c]=toM(s.e);
+  }
+  const n=ss.length,par=Array.from({length:n},(_,i)=>i);
+  const find=i=>{while(par[i]!==i){par[i]=par[par[i]];i=par[i];}return i;};
+  const union=(a,b)=>{a=find(a);b=find(b);if(a!==b)par[a]=b;};
+  for(let i=0;i<n;i++)for(let j=i+1;j<n;j++)
+    if(toM(ss[i].s)<toM(ss[j].e)&&toM(ss[j].s)<toM(ss[i].e))union(i,j);
+  const cmax={};
+  for(let i=0;i<n;i++){const c=find(i);cmax[c]=Math.max(cmax[c]||0,ss[i]._c);}
+  for(let i=0;i<n;i++)ss[i]._n=cmax[find(i)]+1;
+  return ss;
+}
+
+function el(tag,cls,style){
+  const e=document.createElement(tag);
+  if(cls)e.className=cls;
+  if(style)Object.assign(e.style,style);
+  return e;
+}
+
+function buildShift(sh,me,loc){
+  const isMe=sh.name===me,isOp=!!sh.open;
+  const top=(toM(sh.s)-TS)*PD+1;
+  const ht=Math.max(18,(toM(sh.e)-toM(sh.s))*PD-2);
+  const pct=100/sh._n;
+  const cls='shift '+(isMe?'me':isOp?'open':loc);
+  const abbrev=sh._n>=4?sh.name.split(' ')[0].slice(0,4):sh._n===3?sh.name.split(' ')[0].slice(0,6):sh.name.split(' ')[0];
+  const d=el('div',cls,{position:'absolute',top:top+'px',height:ht+'px',
+    left:`${pct*sh._c}%`,width:`calc(${pct}% - 2px)`,zIndex:isMe?'20':'1'});
+  const nm=el('div','shift-name');
+  nm.textContent=isOp?'Open':isMe?`\u2605 ${abbrev}`:abbrev;
+  d.appendChild(nm);
+  if(ht>32&&sh.stn){const stn=el('div','shift-stn');stn.textContent=sh.stn;d.appendChild(stn);}
+  d.addEventListener('click',e=>{e.stopPropagation();showPopup(sh,d);});
+  return d;
+}
+
+function buildLocCol(shifts,me,loc){
+  const laid=doLayout(shifts);
+  const col=el('div','loc-col',{height:(TE-TS)*PD+'px'});
+  laid.forEach(sh=>col.appendChild(buildShift(sh,me,loc)));
+  return col;
+}
+
+function renderDay(){
+  const days=D(),shifts=S(),day=days[state.di];
+  const all=shifts.filter(s=>s.date===day.k);
+  const dtS=all.filter(s=>s.loc==='dt'),sbS=all.filter(s=>s.loc==='sb');
+  const AW=42;
+  const amDT=dtS.filter(s=>!s.open&&toM(s.s)<PM).length;
+  const pmDT=dtS.filter(s=>!s.open&&toM(s.e)>PM).length;
+  const amSB=sbS.filter(s=>!s.open&&toM(s.s)<PM).length;
+  const pmSB=sbS.filter(s=>!s.open&&toM(s.e)>PM).length;
+  const wrap=el('div');
+
+  const strip=el('div','day-strip');
+  const back=el('button','back-btn');
+  back.innerHTML='<i class="ti ti-arrow-left" style="font-size:12px;margin-right:3px"></i>Week';
+  back.onclick=()=>{state.view='week';render();};
+  strip.appendChild(back);
+  days.forEach((d,i)=>{
+    const hasMe=shifts.some(s=>s.date===d.k&&s.name===state.me);
+    const btn=el('button','day-btn'+(i===state.di?' active':hasMe?' working':''));
+    btn.textContent=d.sh;btn.onclick=()=>{state.di=i;render();};
+    strip.appendChild(btn);
+  });
+  wrap.appendChild(strip);
+
+  const titleDiv=el('div','day-title');
+  const h2=el('h2');h2.textContent=day.lg;titleDiv.appendChild(h2);
+  wrap.appendChild(titleDiv);
+
+  const hdrs=el('div','col-hdrs');
+  hdrs.appendChild(el('div','',{width:AW+'px',flexShrink:'0'}));
+  [['dt','ti-map-pin','Downtown'],['sb','ti-droplet','Snack Bar']].forEach(([loc,ico,lbl])=>{
+    const h=el('div',`col-hdr ${loc}`);
+    h.innerHTML=`<i class="ti ${ico}" style="font-size:12px"></i>${lbl.toUpperCase()}`;
+    hdrs.appendChild(h);
+  });
+  wrap.appendChild(hdrs);
+
+  const grid=el('div','time-grid');
+  const ax=el('div','t-axis',{width:AW+'px',height:(TE-TS)*PD+'px'});
+  HTICKS.forEach(m=>{const lb=el('div','t-axis-lbl',{top:(m-TS)*PD+'px'});lb.textContent=fmtM(m);ax.appendChild(lb);});
+  const pmLb=el('div','t-axis-pm',{top:(PM-TS)*PD+'px'});pmLb.textContent='3:30p';ax.appendChild(pmLb);
+  grid.appendChild(ax);
+  const content=el('div','t-content');
+  HTICKS.forEach(m=>content.appendChild(el('div','t-hrline',{top:(m-TS)*PD+'px'})));
+  TICKS.filter(m=>m%60!==0).forEach(m=>content.appendChild(el('div','t-halfline',{top:(m-TS)*PD+'px'})));
+  content.appendChild(el('div','t-pmline',{top:(PM-TS)*PD+'px'}));
+  content.appendChild(buildLocCol(dtS,state.me,'dt'));
+  content.appendChild(buildLocCol(sbS,state.me,'sb'));
+  grid.appendChild(content);
+  wrap.appendChild(grid);
+
+  const foot=el('div','footer');
+  [['dt','DOWNTOWN',amDT,pmDT],['sb','SNACK BAR',amSB,pmSB]].forEach(([loc,lbl,am,pm])=>{
+    const cell=el('div','footer-cell');
+    const flbl=el('div',`footer-lbl ${loc}`);flbl.textContent=lbl;cell.appendChild(flbl);
+    const nums=el('div','footer-nums');
+    [['AM',am],['PM',pm]].forEach(([period,n])=>{
+      const stat=el('div','footer-num');
+      const p=el('div','footer-period');p.textContent=period;stat.appendChild(p);
+      const v=el('div','footer-val');v.textContent=String(n);stat.appendChild(v);
+      nums.appendChild(stat);
+    });
+    cell.appendChild(nums);foot.appendChild(cell);
+  });
+  wrap.appendChild(foot);
+  return wrap;
+}
+
+function renderWeek(){
+  const days=D(),shifts=S();
+  const WH=(TE-TS)*PW,AW=36;
+  const wrap=el('div');
+  const hint=el('div','hint');hint.textContent='tap any day to see full schedule';wrap.appendChild(hint);
+
+  const hdrRow=el('div','week-header');
+  hdrRow.appendChild(el('div','axis-spacer',{width:AW+'px'}));
+  days.forEach((d,i)=>{
+    const hasMe=shifts.some(s=>s.date===d.k&&s.name===state.me);
+    const cell=el('div',`wk-day-hdr${hasMe?' working':''}`);
+    const nm=el('div','day-name');nm.textContent=d.sh;cell.appendChild(nm);
+    if(hasMe){const dot=el('div','day-dot');cell.appendChild(dot);}
+    cell.onclick=()=>{state.di=i;state.view='day';render();};
+    hdrRow.appendChild(cell);
+  });
+  wrap.appendChild(hdrRow);
+
+  const grid=el('div','week-grid');
+  const ax=el('div','wk-axis',{width:AW+'px',height:WH+'px'});
+  HTICKS.forEach(m=>{const lb=el('div','wk-axis-lbl',{top:(m-TS)*PW+'px'});lb.textContent=fmtM(m);ax.appendChild(lb);});
+  grid.appendChild(ax);
+  const cols=el('div','week-cols',{height:WH+'px'});
+  HTICKS.forEach(m=>cols.appendChild(el('div','wk-gridline',{top:(m-TS)*PW+'px'})));
+  cols.appendChild(el('div','wk-pmline',{top:(PM-TS)*PW+'px'}));
+  days.forEach((d,i)=>{
+    const all=shifts.filter(s=>s.date===d.k),myS=all.filter(s=>s.name===state.me);
+    const col=el('div','wk-day-col',{height:WH+'px'});
+    col.onclick=()=>{state.di=i;state.view='day';render();};
+    ['dt','sb'].forEach(loc=>{
+      const sub=el('div','wk-sub');
+      all.filter(s=>s.loc===loc&&s.name!==state.me).forEach(s=>{
+        sub.appendChild(el('div','wk-bar',{top:(toM(s.s)-TS)*PW+'px',
+          height:Math.max(1,(toM(s.e)-toM(s.s))*PW)+'px',
+          background:loc==='dt'?'rgba(59,130,246,0.2)':'rgba(239,68,68,0.2)'}));
+      });
+      myS.filter(s=>s.loc===loc).forEach(s=>{
+        sub.appendChild(el('div','wk-bar',{top:(toM(s.s)-TS)*PW+'px',
+          height:Math.max(2,(toM(s.e)-toM(s.s))*PW)+'px',
+          background:'rgba(202,138,4,0.9)',zIndex:'5'}));
+      });
+      col.appendChild(sub);
+    });
+    cols.appendChild(col);
+  });
+  grid.appendChild(cols);
+  wrap.appendChild(grid);
+
+  const leg=el('div','week-legend');
+  [['rgba(59,130,246,0.55)','Downtown'],['rgba(239,68,68,0.55)','Snack Bar'],
+   ...(state.me?[['rgba(202,138,4,0.9)',state.me.split(' ')[0]]]:[])
+  ].forEach(([col,lbl])=>{
+    const item=el('div','legend-item');
+    item.appendChild(el('div','legend-swatch',{background:col}));
+    const t=document.createTextNode(lbl);item.appendChild(t);
+    leg.appendChild(item);
+  });
+  wrap.appendChild(leg);
+  return wrap;
+}
+
+function render(){
+  document.getElementById('main').innerHTML='';
+  document.getElementById('main').appendChild(state.view==='week'?renderWeek():renderDay());
+}
+
+function showPopup(sh,anchor){
+  const pop=document.getElementById('shift-popup');
+  const isMe=sh.name===state.me, isOp=!!sh.open, loc=sh.loc;
+  // fill content
+  document.getElementById('sp-name').textContent=isOp?'Open Shift':sh.name;
+  document.getElementById('sp-name').className='sp-name '+(isMe?'me':isOp?'open':loc);
+  document.getElementById('sp-time-val').textContent=`${fmtM(toM(sh.s))} – ${fmtM(toM(sh.e))}`;
+  const stnRow=document.getElementById('sp-stn-row');
+  const stnVal=document.getElementById('sp-stn-val');
+  if(sh.stn){stnVal.textContent=sh.stn;stnRow.style.display='';}
+  else stnRow.style.display='none';
+  const badge=document.getElementById('sp-badge');
+  badge.className='sp-badge '+(isOp?'open':loc);
+  badge.textContent=isOp?'Open':(loc==='dt'?'Downtown':'Snack Bar');
+  // position
+  pop.style.display='block';
+  pop.classList.remove('visible');
+  requestAnimationFrame(()=>{
+    const r=anchor.getBoundingClientRect();
+    const pw=pop.offsetWidth, ph=pop.offsetHeight;
+    const vw=window.innerWidth, vh=window.innerHeight;
+    let left=r.right+10;
+    if(left+pw>vw-8) left=r.left-pw-10;
+    if(left<8) left=8;
+    let top=r.top;
+    if(top+ph>vh-8) top=vh-ph-8;
+    if(top<8) top=8;
+    pop.style.left=left+'px';
+    pop.style.top=top+'px';
+    pop.classList.add('visible');
+  });
+}
+function hidePopup(){
+  const pop=document.getElementById('shift-popup');
+  pop.classList.remove('visible');
+  setTimeout(()=>{if(!pop.classList.contains('visible'))pop.style.display='none';},150);
+}
+document.addEventListener('click',hidePopup);
+
+function setWeek(wi){
+  state.week=wi;
+  state.view='week';
+  state.di=0;
+  document.getElementById('week-sub').textContent=W().range;
+  document.querySelectorAll('.wtab').forEach((b,i)=>b.classList.toggle('active',i===wi));
+  // Rebuild dropdown, keep state.me selected if they work this week
+  const prev=state.me;
+  const sel=document.getElementById('emp-select');
+  sel.innerHTML='<option value="">&#128100; Who are you?</option>';
+  const emps=[...new Set(S().filter(x=>!x.open).map(x=>x.name))].sort();
+  emps.forEach(n=>{
+    const o=document.createElement('option');
+    o.value=n;o.textContent=n;
+    if(n===prev)o.selected=true;
+    sel.appendChild(o);
+  });
+  // Keep state.me regardless so highlight persists across weeks
+  render();
+}
+
+// Build calendar-style week tabs
+const tabsEl=document.getElementById('week-tabs');
+WEEKS.forEach((wk,i)=>{
+  const btn=el('button','wtab'+(i===state.week?' active':''));
+  const mo=el('div','wtab-month');mo.textContent=wk.month;btn.appendChild(mo);
+  const daysRow=el('div','wtab-days');
+  wk.calDays.forEach(cd=>{
+    const day=el('div','wtab-day');
+    const dl=el('div','wtab-dl');dl.textContent=cd.l;day.appendChild(dl);
+    const dn=el('div','wtab-dn');dn.textContent=String(cd.n);day.appendChild(dn);
+    daysRow.appendChild(day);
+  });
+  btn.appendChild(daysRow);
+  btn.onclick=()=>setWeek(i);
+  tabsEl.appendChild(btn);
+});
+
+document.getElementById('emp-select').addEventListener('change',e=>{state.me=e.target.value;render();});
+setWeek(state.week);
+</script>
+</body>
+</html>
