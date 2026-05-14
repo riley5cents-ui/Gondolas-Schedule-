@@ -42,6 +42,14 @@ select:focus{border-color:#2a4a6a}
 .wtab-dn{font-size:9.5px;font-weight:500;color:#2d4a6a;font-family:'JetBrains Mono',monospace;line-height:1}
 .wtab.active .wtab-dl{color:#1e3a5a}
 .wtab.active .wtab-dn{color:#60a5fa}
+.wtab-day.is-today .wtab-dl{color:rgba(234,179,8,0.7)}
+.wtab-day.is-today .wtab-dn{color:#07101e;background:#eab308;border-radius:50%;
+  width:16px;height:16px;display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:8.5px;margin:0 auto}
+.wtab-day.is-viewing .wtab-dl{color:rgba(34,197,94,0.7)}
+.wtab-day.is-viewing .wtab-dn{color:#07101e;background:#22c55e;border-radius:50%;
+  width:16px;height:16px;display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:8.5px;margin:0 auto}
 
 /* ── WEEK VIEW ── */
 .week-header{display:flex;border-bottom:1px solid #0a1828}
@@ -52,7 +60,10 @@ select:focus{border-color:#2a4a6a}
 .wk-day-hdr.working{background:rgba(202,138,4,0.08)}
 .wk-day-hdr .day-name{font-size:11px;font-weight:500;color:#2d4a6a}
 .wk-day-hdr.working .day-name{color:#d97706;font-weight:600}
+.wk-day-hdr.today .day-name{color:#eab308;font-weight:600}
+.wk-day-hdr.today{background:rgba(234,179,8,0.08)}
 .wk-day-hdr .day-dot{width:4px;height:4px;border-radius:50%;background:#ca8a04;margin:2px auto 0}
+.today-dot{width:4px;height:4px;border-radius:50%;background:#eab308;margin:2px auto 0;opacity:.8}
 .week-grid{display:flex;position:relative}
 .wk-axis{flex-shrink:0;position:relative}
 .wk-axis-lbl{position:absolute;right:4px;font-size:10px;color:#1a3050;
@@ -74,8 +85,9 @@ select:focus{border-color:#2a4a6a}
   background:#050e1a;flex-wrap:nowrap;position:sticky;top:110px;z-index:90}
 .day-strip::-webkit-scrollbar{height:0}
 .day-btn:hover{background:#0d1929;color:#4a7a9b}
-.day-btn.active{background:rgba(202,138,4,0.18);border-color:rgba(202,138,4,0.5);
-  color:#d97706;font-weight:600}
+.day-btn.today{border-color:rgba(234,179,8,0.55);color:#eab308;background:rgba(234,179,8,0.1)}
+.day-btn.active{background:rgba(34,197,94,0.16);border-color:rgba(34,197,94,0.5);
+  color:#22c55e;font-weight:600}
 .day-btn.working{border-color:rgba(202,138,4,0.3);color:#b45309;opacity:.75}
 .back-btn{cursor:pointer;font-size:11px;padding:4px 10px;border-radius:6px;
   border:1px solid #1a2e46;background:transparent;color:#3b82f6;
@@ -165,7 +177,7 @@ select:focus{border-color:#2a4a6a}
 .shift.cmp .shift-stn{color:#4ade80}
 
 /* ── BIGGER DAY BUTTONS ── */
-.day-btn{cursor:pointer;font-size:12px;padding:7px 13px;border-radius:7px;
+.day-btn{cursor:pointer;font-size:13px;padding:11px 14px;border-radius:8px;
   border:1px solid #0e1c2e;background:transparent;color:#2d4a6a;
   font-family:'Outfit',sans-serif;font-weight:500;flex-shrink:0;white-space:nowrap;
   transition:background .12s,color .12s}
@@ -230,6 +242,23 @@ select:focus{border-color:#2a4a6a}
 .pin-key.pin-empty{background:transparent;border-color:transparent;pointer-events:none}
 .pin-reset-link{color:#1a3050;font-size:11px;margin-top:28px;cursor:pointer;text-decoration:underline}
 .pin-reset-link:hover{color:#2d5a7a}
+
+/* ── WEEK START PICKER ── */
+#wk-start-btn{background:#0d1929;border:1px solid #1a2e46;border-radius:6px;color:#4a7a9b;
+  font-size:11px;padding:5px 9px;cursor:pointer;display:flex;align-items:center;gap:5px;
+  font-family:'Outfit',sans-serif;flex-shrink:0;white-space:nowrap}
+#wk-start-btn:hover{border-color:#2a4a6a;color:#7aa8d0}
+#wk-start-menu{position:fixed;z-index:150;background:#0c1a2e;border:1px solid #1e3a5a;
+  border-radius:10px;padding:11px 13px;box-shadow:0 6px 24px rgba(0,0,0,0.55);display:none}
+#wk-start-menu.open{display:block}
+.wks-title{font-size:10px;color:#1e3a5a;letter-spacing:.6px;text-transform:uppercase;
+  font-weight:600;margin-bottom:8px}
+.wks-days{display:flex;gap:5px}
+.wks-day{background:#0d1929;border:1px solid #1a2e46;border-radius:5px;color:#2d4a6a;
+  font-size:11px;font-weight:500;padding:6px 8px;cursor:pointer;
+  font-family:'JetBrains Mono',monospace;transition:all .12s}
+.wks-day:hover{background:#1a2e46;color:#7aa8d0}
+.wks-day.active{background:rgba(59,130,246,0.15);border-color:rgba(59,130,246,0.4);color:#60a5fa}
 </style>
 </head>
 <body>
@@ -266,7 +295,13 @@ select:focus{border-color:#2a4a6a}
       <h1><i class="ti ti-calendar" aria-hidden="true"></i> Gondolas Schedule</h1>
       <div class="sub" id="week-sub"></div>
     </div>
-    <select id="emp-select"><option value="">&#128100; Who are you?</option></select>
+    <div style="display:flex;align-items:center;gap:6px">
+      <button id="wk-start-btn" onclick="toggleWkStartMenu(event)" title="Week start day">
+        <i class="ti ti-calendar-week" style="font-size:12px"></i>
+        <span id="wk-start-lbl">Mo</span>
+      </button>
+      <select id="emp-select"><option value="">&#128100; Who are you?</option></select>
+    </div>
   </div>
   <div class="week-tabs" id="week-tabs"></div>
   <div id="cmp-bar">
@@ -283,6 +318,18 @@ select:focus{border-color:#2a4a6a}
     <button class="cmp-sheet-done" onclick="closeCmpSheet()">Done</button>
   </div>
   <div id="cmp-list"></div>
+</div>
+<div id="wk-start-menu">
+  <div class="wks-title">Week starts on</div>
+  <div class="wks-days">
+    <button class="wks-day" onclick="setWeekStart(0)">Mo</button>
+    <button class="wks-day" onclick="setWeekStart(1)">Tu</button>
+    <button class="wks-day" onclick="setWeekStart(2)">We</button>
+    <button class="wks-day" onclick="setWeekStart(3)">Th</button>
+    <button class="wks-day" onclick="setWeekStart(4)">Fr</button>
+    <button class="wks-day" onclick="setWeekStart(5)">Sa</button>
+    <button class="wks-day" onclick="setWeekStart(6)">Su</button>
+  </div>
 </div>
 <div id="shift-popup">
   <div id="sp-name" class="sp-name"></div>
@@ -523,11 +570,12 @@ const fmtM=m=>{const h=Math.floor(m/60),mn=m%60,pm=h>=12,dh=h>12?h-12:h===0?12:h
 const TICKS=[];for(let m=TS;m<=TE;m+=30)TICKS.push(m);
 const HTICKS=TICKS.filter(m=>m%60===0);
 
-let state={view:'week',di:0,me:'',week:2,cmp:[]};
+let state={view:'week',di:0,me:'',week:2,cmp:[],weekStart:parseInt(localStorage.getItem('gondolas_wkstart')||'0')};
 function W(){return WEEKS[state.week];}
 function S(){return W().shifts;}
 function D(){return W().days;}
 function goDay(dir){const days=D();state.di=(state.di+dir+days.length)%days.length;render();}
+function goWeek(dir){const wi=Math.max(0,Math.min(WEEKS.length-1,state.week+dir));if(wi!==state.week)setWeek(wi);}
 
 function doLayout(shifts){
   const ss=[...shifts].map(s=>({...s})).sort((a,b)=>toM(a.s)-toM(b.s));
@@ -567,7 +615,9 @@ function buildShift(sh,me,loc){
   nm.textContent=isOp?'Open':isMe?`\u2605 ${abbrev}`:isCmp?`\u263a ${abbrev}`:abbrev;
   d.appendChild(nm);
   if(ht>32&&sh.stn){const stn=el('div','shift-stn');stn.textContent=sh.stn;d.appendChild(stn);}
-  d.addEventListener('click',e=>{e.stopPropagation();showPopup(sh,d);});
+  d.addEventListener('mouseenter',()=>{clearTimeout(_hideTimer);showPopup(sh,d);});
+  d.addEventListener('mouseleave',()=>{if(!_popPinned)_hideTimer=setTimeout(forceHidePopup,250);});
+  d.addEventListener('click',e=>{e.stopPropagation();_popPinned=true;showPopup(sh,d);});
   return d;
 }
 
@@ -583,6 +633,8 @@ function renderDay(){
   const all=shifts.filter(s=>s.date===day.k);
   const dtS=all.filter(s=>s.loc==='dt'),sbS=all.filter(s=>s.loc==='sb');
   const AW=42;
+  const now=new Date();
+  const todayKey=(now.getMonth()+1+'').padStart(2,'0')+'-'+(now.getDate()+'').padStart(2,'0');
   const amDT=dtS.filter(s=>!s.open&&toM(s.s)<PM).length;
   const pmDT=dtS.filter(s=>!s.open&&toM(s.e)>PM).length;
   const amSB=sbS.filter(s=>!s.open&&toM(s.s)<PM).length;
@@ -603,7 +655,14 @@ function renderDay(){
   strip.appendChild(back);
   days.forEach((d,i)=>{
     const hasMe=shifts.some(s=>s.date===d.k&&s.name===state.me);
-    const btn=el('button','day-btn'+(i===state.di?' active':hasMe?' working':''));
+    const isToday=d.k===todayKey;
+    const isActive=i===state.di;
+    let btnCls='day-btn';
+    if(isActive) btnCls+=' active';
+    else if(isToday) btnCls+=' today';
+    else if(hasMe) btnCls+=' working';
+    if(isToday&&isActive) btnCls+=' today'; // keep today marker even when active
+    const btn=el('button',btnCls);
     btn.textContent=d.sh;btn.onclick=()=>{state.di=i;render();};
     strip.appendChild(btn);
   });
@@ -655,18 +714,30 @@ function renderDay(){
 
 function renderWeek(){
   const days=D(),shifts=S();
+  const ws=state.weekStart;
+  const ordDays=ws===0?days:[...days.slice(ws),...days.slice(0,ws)];
   const WH=(TE-TS)*PW,AW=36;
+  const now=new Date();
+  const todayKey=(now.getMonth()+1+'').padStart(2,'0')+'-'+(now.getDate()+'').padStart(2,'0');
   const wrap=el('div');
-  const hint=el('div','hint');hint.textContent='tap any day to see full schedule';wrap.appendChild(hint);
+  let _tx=0,_ty=0;
+  wrap.addEventListener('touchstart',e=>{_tx=e.touches[0].clientX;_ty=e.touches[0].clientY;},{passive:true});
+  wrap.addEventListener('touchend',e=>{
+    const dx=e.changedTouches[0].clientX-_tx,dy=e.changedTouches[0].clientY-_ty;
+    if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.5) goWeek(dx<0?1:-1);
+  },{passive:true});
+  const hint=el('div','hint');hint.textContent='tap any day · swipe to change week';wrap.appendChild(hint);
 
   const hdrRow=el('div','week-header');
   hdrRow.appendChild(el('div','axis-spacer',{width:AW+'px'}));
-  days.forEach((d,i)=>{
+  ordDays.forEach(d=>{
     const hasMe=shifts.some(s=>s.date===d.k&&s.name===state.me);
-    const cell=el('div',`wk-day-hdr${hasMe?' working':''}`);
+    const isToday=d.k===todayKey;
+    const cell=el('div',`wk-day-hdr${hasMe?' working':''}${isToday?' today':''}`);
     const nm=el('div','day-name');nm.textContent=d.sh;cell.appendChild(nm);
     if(hasMe){const dot=el('div','day-dot');cell.appendChild(dot);}
-    cell.onclick=()=>{state.di=i;state.view='day';render();};
+    if(isToday&&!hasMe){const dot=el('div','today-dot');cell.appendChild(dot);}
+    cell.onclick=()=>{state.di=days.indexOf(d);state.view='day';render();};
     hdrRow.appendChild(cell);
   });
   wrap.appendChild(hdrRow);
@@ -678,11 +749,11 @@ function renderWeek(){
   const cols=el('div','week-cols',{height:WH+'px'});
   HTICKS.forEach(m=>cols.appendChild(el('div','wk-gridline',{top:(m-TS)*PW+'px'})));
   cols.appendChild(el('div','wk-pmline',{top:(PM-TS)*PW+'px'}));
-  days.forEach((d,i)=>{
+  ordDays.forEach(d=>{
     const all=shifts.filter(s=>s.date===d.k),myS=all.filter(s=>s.name===state.me);
     const cmpS=all.filter(s=>state.cmp.includes(s.name));
     const col=el('div','wk-day-col',{height:WH+'px'});
-    col.onclick=()=>{state.di=i;state.view='day';render();};
+    col.onclick=()=>{state.di=days.indexOf(d);state.view='day';render();};
     ['dt','sb'].forEach(loc=>{
       const sub=el('div','wk-sub');
       all.filter(s=>s.loc===loc&&s.name!==state.me&&!state.cmp.includes(s.name)).forEach(s=>{
@@ -723,11 +794,15 @@ function renderWeek(){
 
 function render(){
   updateCmpBar();
+  buildWeekTabs();
   document.getElementById('main').innerHTML='';
   document.getElementById('main').appendChild(state.view==='week'?renderWeek():renderDay());
 }
 
+let _popPinned=false,_hideTimer=null;
+
 function showPopup(sh,anchor){
+  clearTimeout(_hideTimer);
   const pop=document.getElementById('shift-popup');
   const isMe=sh.name===state.me,isOp=!!sh.open,isCmp=state.cmp.includes(sh.name),loc=sh.loc;
   document.getElementById('sp-name').textContent=isOp?'Open Shift':sh.name;
@@ -741,7 +816,6 @@ function showPopup(sh,anchor){
   badge.className='sp-badge '+(isOp?'open':isCmp?'cmp':loc);
   badge.textContent=isOp?'Open':(loc==='dt'?'Downtown':'Snack Bar');
 
-  // Action buttons — only for real employees
   const actions=document.getElementById('sp-actions');
   const hlBtn=document.getElementById('sp-hl-btn');
   const cmpBtn=document.getElementById('sp-cmp-btn');
@@ -749,7 +823,6 @@ function showPopup(sh,anchor){
     actions.style.display='none';
   } else {
     actions.style.display='flex';
-    // Highlight button
     if(isMe){
       hlBtn.textContent='★ That\'s you';
       hlBtn.className='sp-action-btn sp-hl is-me';
@@ -761,13 +834,11 @@ function showPopup(sh,anchor){
         e.stopPropagation();
         state.me=sh.name;
         state.cmp=state.cmp.filter(n=>n!==sh.name);
-        // Sync dropdown
         const sel=document.getElementById('emp-select');
         if(sel.querySelector(`option[value="${sh.name}"]`)) sel.value=sh.name;
-        updateCmpBar();render();hidePopup();
+        updateCmpBar();render();forceHidePopup();
       };
     }
-    // Compare button — hide if this is "me"
     if(isMe){
       cmpBtn.style.display='none';
     } else {
@@ -786,15 +857,16 @@ function showPopup(sh,anchor){
       };
     }
   }
-  // position
+
+  // Position: top of popup aligns with top of shift, to the right (or left if no room)
   pop.style.display='block';
   pop.classList.remove('visible');
   requestAnimationFrame(()=>{
     const r=anchor.getBoundingClientRect();
-    const pw=pop.offsetWidth, ph=pop.offsetHeight;
-    const vw=window.innerWidth, vh=window.innerHeight;
-    let left=r.right+10;
-    if(left+pw>vw-8) left=r.left-pw-10;
+    const pw=pop.offsetWidth,ph=pop.offsetHeight;
+    const vw=window.innerWidth,vh=window.innerHeight;
+    let left=r.right+8;
+    if(left+pw>vw-8) left=r.left-pw-8;
     if(left<8) left=8;
     let top=r.top;
     if(top+ph>vh-8) top=vh-ph-8;
@@ -804,18 +876,63 @@ function showPopup(sh,anchor){
     pop.classList.add('visible');
   });
 }
+
 function hidePopup(){
+  // Only hide on hover-out if not pinned
+  if(_popPinned) return;
   const pop=document.getElementById('shift-popup');
   pop.classList.remove('visible');
   setTimeout(()=>{if(!pop.classList.contains('visible'))pop.style.display='none';},150);
 }
-document.addEventListener('click',hidePopup);
+
+function forceHidePopup(){
+  _popPinned=false;
+  const pop=document.getElementById('shift-popup');
+  pop.classList.remove('visible');
+  setTimeout(()=>{if(!pop.classList.contains('visible'))pop.style.display='none';},150);
+}
+
+// Popup hover — keep it open while mouse is inside it
+document.getElementById('shift-popup').addEventListener('mouseenter',()=>clearTimeout(_hideTimer));
+document.getElementById('shift-popup').addEventListener('mouseleave',()=>{if(!_popPinned)_hideTimer=setTimeout(forceHidePopup,250);});
+document.getElementById('shift-popup').addEventListener('click',e=>e.stopPropagation());
+document.addEventListener('click',()=>{
+  document.getElementById('wk-start-menu').classList.remove('open');
+  forceHidePopup();
+});
+
+const WK_DAY_LABELS=['Mo','Tu','We','Th','Fr','Sa','Su'];
+function toggleWkStartMenu(e){
+  e.stopPropagation();
+  const menu=document.getElementById('wk-start-menu');
+  if(menu.classList.contains('open')){menu.classList.remove('open');return;}
+  document.querySelectorAll('.wks-day').forEach((b,i)=>b.classList.toggle('active',i===state.weekStart));
+  const btn=document.getElementById('wk-start-btn');
+  const r=btn.getBoundingClientRect();
+  menu.style.right=(window.innerWidth-r.right)+'px';
+  menu.style.top=(r.bottom+6)+'px';
+  menu.style.left='auto';
+  menu.classList.add('open');
+}
+function setWeekStart(i){
+  state.weekStart=i;
+  localStorage.setItem('gondolas_wkstart',i);
+  document.getElementById('wk-start-lbl').textContent=WK_DAY_LABELS[i];
+  document.querySelectorAll('.wks-day').forEach((b,j)=>b.classList.toggle('active',j===i));
+  document.getElementById('wk-start-menu').classList.remove('open');
+  if(state.view==='week') render();
+}
+// Init button label
+document.getElementById('wk-start-lbl').textContent=WK_DAY_LABELS[state.weekStart];
 
 // ── KEYBOARD NAVIGATION ──────────────────────────────────────────────────
 document.addEventListener('keydown',e=>{
   if(state.view==='day'){
     if(e.key==='ArrowRight') goDay(1);
     if(e.key==='ArrowLeft') goDay(-1);
+  } else if(state.view==='week'){
+    if(e.key==='ArrowRight') goWeek(1);
+    if(e.key==='ArrowLeft') goWeek(-1);
   }
 });
 
@@ -943,7 +1060,6 @@ function setWeek(wi){
   state.view='week';
   state.di=0;
   document.getElementById('week-sub').textContent=W().range;
-  document.querySelectorAll('.wtab').forEach((b,i)=>b.classList.toggle('active',i===wi));
   // Rebuild dropdown, keep state.me selected if they work this week
   const prev=state.me;
   const sel=document.getElementById('emp-select');
@@ -960,21 +1076,30 @@ function setWeek(wi){
 }
 
 // Build calendar-style week tabs
-const tabsEl=document.getElementById('week-tabs');
-WEEKS.forEach((wk,i)=>{
-  const btn=el('button','wtab'+(i===state.week?' active':''));
-  const mo=el('div','wtab-month');mo.textContent=wk.month;btn.appendChild(mo);
-  const daysRow=el('div','wtab-days');
-  wk.calDays.forEach(cd=>{
-    const day=el('div','wtab-day');
-    const dl=el('div','wtab-dl');dl.textContent=cd.l;day.appendChild(dl);
-    const dn=el('div','wtab-dn');dn.textContent=String(cd.n);day.appendChild(dn);
-    daysRow.appendChild(day);
+function buildWeekTabs(){
+  const now=new Date();
+  const todayKey=(now.getMonth()+1+'').padStart(2,'0')+'-'+(now.getDate()+'').padStart(2,'0');
+  const viewingKey=state.view==='day'?D()[state.di].k:null;
+  const tabsEl=document.getElementById('week-tabs');
+  tabsEl.innerHTML='';
+  WEEKS.forEach((wk,i)=>{
+    const btn=el('button','wtab'+(i===state.week?' active':''));
+    const mo=el('div','wtab-month');mo.textContent=wk.month;btn.appendChild(mo);
+    const daysRow=el('div','wtab-days');
+    wk.calDays.forEach((cd,j)=>{
+      const dayKey=wk.days[j].k;
+      const isViewing=dayKey===viewingKey;
+      const isToday=!isViewing&&dayKey===todayKey;
+      const day=el('div','wtab-day'+(isViewing?' is-viewing':isToday?' is-today':''));
+      const dl=el('div','wtab-dl');dl.textContent=cd.l;day.appendChild(dl);
+      const dn=el('div','wtab-dn');dn.textContent=String(cd.n);day.appendChild(dn);
+      daysRow.appendChild(day);
+    });
+    btn.appendChild(daysRow);
+    btn.onclick=()=>setWeek(i);
+    tabsEl.appendChild(btn);
   });
-  btn.appendChild(daysRow);
-  btn.onclick=()=>setWeek(i);
-  tabsEl.appendChild(btn);
-});
+}
 
 document.getElementById('emp-select').addEventListener('change',e=>{state.me=e.target.value;state.cmp=[];updateCmpBar();render();});
 setWeek(state.week);
