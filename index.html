@@ -73,10 +73,6 @@ select:focus{border-color:#2a4a6a}
   border-bottom:1px solid #0a1828;gap:4px;overflow-x:auto;
   background:#050e1a;flex-wrap:nowrap;position:sticky;top:110px;z-index:90}
 .day-strip::-webkit-scrollbar{height:0}
-.day-btn{cursor:pointer;font-size:11px;padding:3px 9px;border-radius:5px;
-  border:1px solid #0e1c2e;background:transparent;color:#2d4a6a;
-  font-family:'Outfit',sans-serif;font-weight:400;flex-shrink:0;white-space:nowrap;
-  transition:background .12s,color .12s}
 .day-btn:hover{background:#0d1929;color:#4a7a9b}
 .day-btn.active{background:rgba(202,138,4,0.18);border-color:rgba(202,138,4,0.5);
   color:#d97706;font-weight:600}
@@ -149,9 +145,121 @@ select:focus{border-color:#2a4a6a}
 .sp-badge.dt{color:#60a5fa;background:rgba(59,130,246,0.12);border:1px solid rgba(59,130,246,0.2)}
 .sp-badge.sb{color:#f87171;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.18)}
 .sp-badge.open{color:#6b7280;background:rgba(75,85,99,0.12);border:1px solid rgba(75,85,99,0.2)}
+.sp-name.cmp{color:#86efac}
+.sp-badge.cmp{color:#22c55e;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25)}
+
+/* ── POPUP ACTION BUTTONS ── */
+.sp-actions{display:flex;gap:6px;margin-top:10px}
+.sp-action-btn{flex:1;padding:7px 4px;border-radius:7px;font-size:11px;font-weight:600;
+  cursor:pointer;font-family:'Outfit',sans-serif;transition:opacity .15s;text-align:center;line-height:1.3}
+.sp-action-btn.sp-hl{background:rgba(202,138,4,0.18);color:#fbbf24;border:1px solid rgba(202,138,4,0.4)}
+.sp-action-btn.sp-hl:active{opacity:.7}
+.sp-action-btn.sp-hl.is-me{background:rgba(202,138,4,0.08);color:#b45309;border-color:rgba(202,138,4,0.2);cursor:default}
+.sp-action-btn.sp-cmp{background:rgba(34,197,94,0.12);color:#86efac;border:1px solid rgba(34,197,94,0.35)}
+.sp-action-btn.sp-cmp:active{opacity:.7}
+.sp-action-btn.sp-cmp.is-cmp{background:rgba(239,68,68,0.1);color:#fca5a5;border:1px solid rgba(239,68,68,0.3)}
+
+/* ── COMPARISON SHIFTS ── */
+.shift.cmp{background:rgba(34,197,94,0.16);border:.5px solid rgba(34,197,94,0.5);border-left:2.5px solid #22c55e;z-index:15!important}
+.shift.cmp .shift-name{color:#86efac;font-weight:600}
+.shift.cmp .shift-stn{color:#4ade80}
+
+/* ── BIGGER DAY BUTTONS ── */
+.day-btn{cursor:pointer;font-size:12px;padding:7px 13px;border-radius:7px;
+  border:1px solid #0e1c2e;background:transparent;color:#2d4a6a;
+  font-family:'Outfit',sans-serif;font-weight:500;flex-shrink:0;white-space:nowrap;
+  transition:background .12s,color .12s}
+
+/* ── COMPARE BAR ── */
+#cmp-bar{display:none;align-items:center;padding:6px 12px;gap:8px;flex-wrap:wrap;
+  border-bottom:1px solid #0a1828;background:#050e1a;min-height:38px}
+.cmp-label{font-size:10px;color:#1e3a5a;font-weight:600;letter-spacing:.5px;white-space:nowrap;text-transform:uppercase}
+#cmp-chips{display:flex;gap:5px;flex-wrap:wrap;flex:1}
+.cmp-chip{display:inline-flex;align-items:center;gap:4px;background:rgba(34,197,94,0.13);
+  border:1px solid rgba(34,197,94,0.35);border-radius:12px;padding:3px 6px 3px 10px;
+  font-size:11px;color:#86efac}
+.cmp-chip-x{background:none;border:none;color:#16a34a;cursor:pointer;font-size:15px;
+  line-height:1;padding:0;margin:0;font-family:sans-serif}
+#cmp-add-btn{background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.3);
+  border-radius:6px;color:#60a5fa;font-size:12px;cursor:pointer;padding:4px 11px;
+  font-family:'Outfit',sans-serif;white-space:nowrap;flex-shrink:0}
+
+/* ── COMPARE SHEET ── */
+#cmp-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:190;
+  opacity:0;pointer-events:none;transition:opacity .25s}
+#cmp-backdrop.open{opacity:1;pointer-events:auto}
+#cmp-sheet{position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;
+  background:#0d1929;border-radius:16px 16px 0 0;border-top:1px solid #1a2e46;
+  z-index:200;transform:translateY(100%);transition:transform .3s ease;max-height:72vh;overflow-y:auto}
+#cmp-sheet.open{transform:translateY(0)}
+.cmp-sheet-hdr{display:flex;align-items:center;justify-content:space-between;
+  padding:14px 16px;border-bottom:1px solid #0a1828;position:sticky;top:0;background:#0d1929;z-index:1}
+.cmp-sheet-title{font-size:14px;font-weight:600;color:#c8d8f0}
+.cmp-sheet-done{background:rgba(59,130,246,0.12);border:1px solid rgba(59,130,246,0.3);
+  border-radius:8px;color:#60a5fa;font-size:12px;font-weight:600;padding:5px 14px;
+  cursor:pointer;font-family:'Outfit',sans-serif}
+.cmp-item{display:flex;align-items:center;gap:12px;padding:13px 16px;
+  border-bottom:1px solid #0a1828;cursor:pointer;transition:background .1s}
+.cmp-item:active{background:#0a1828}
+.cmp-check{width:18px;height:18px;border-radius:5px;border:2px solid #1e3a5a;
+  flex-shrink:0;transition:all .15s;display:flex;align-items:center;justify-content:center}
+.cmp-check.checked{background:#22c55e;border-color:#22c55e}
+.cmp-check.checked::after{content:'✓';font-size:11px;color:#07101e;font-weight:700}
+.cmp-name{font-size:13px;color:#4a7a9b}
+.cmp-item.selected .cmp-name{color:#86efac;font-weight:500}
+
+/* ── PIN SCREEN ── */
+#pin-screen{position:fixed;inset:0;background:#07101e;z-index:500;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px}
+.pin-icon{font-size:52px;margin-bottom:10px;line-height:1}
+.pin-app-name{font-size:24px;font-weight:700;color:#c8d8f0;letter-spacing:.3px;margin-bottom:6px}
+.pin-subtitle{font-size:13px;color:#2d5a7a;margin-bottom:36px;min-height:18px;text-align:center}
+.pin-dots{display:flex;gap:18px;margin-bottom:12px}
+.pin-dot{width:16px;height:16px;border-radius:50%;border:2px solid #1a3050;
+  background:transparent;transition:background .15s,border-color .15s,transform .1s}
+.pin-dot.filled{background:#3b82f6;border-color:#3b82f6;transform:scale(1.1)}
+.pin-dot.error{background:#ef4444 !important;border-color:#ef4444 !important}
+.pin-error-msg{font-size:12px;color:#ef4444;min-height:18px;margin-bottom:24px;text-align:center}
+.pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:252px}
+.pin-key{background:#0d1929;border:1px solid #1a2e46;border-radius:12px;color:#c8d8f0;
+  font-size:24px;font-weight:500;font-family:'JetBrains Mono',monospace;
+  padding:18px 0;text-align:center;cursor:pointer;transition:background .1s;
+  user-select:none;-webkit-user-select:none;line-height:1}
+.pin-key:active,.pin-key.pressed{background:#1a2e46}
+.pin-key.pin-del{font-size:20px;color:#4a7a9b}
+.pin-key.pin-empty{background:transparent;border-color:transparent;pointer-events:none}
+.pin-reset-link{color:#1a3050;font-size:11px;margin-top:28px;cursor:pointer;text-decoration:underline}
+.pin-reset-link:hover{color:#2d5a7a}
 </style>
 </head>
 <body>
+<div id="pin-screen">
+  <div class="pin-icon">🚡</div>
+  <div class="pin-app-name">Gondolas</div>
+  <div class="pin-subtitle" id="pin-subtitle">Loading...</div>
+  <div class="pin-dots">
+    <div class="pin-dot" id="pd0"></div>
+    <div class="pin-dot" id="pd1"></div>
+    <div class="pin-dot" id="pd2"></div>
+    <div class="pin-dot" id="pd3"></div>
+  </div>
+  <div class="pin-error-msg" id="pin-error-msg"></div>
+  <div class="pin-pad">
+    <button class="pin-key" onclick="pinInput('1')">1</button>
+    <button class="pin-key" onclick="pinInput('2')">2</button>
+    <button class="pin-key" onclick="pinInput('3')">3</button>
+    <button class="pin-key" onclick="pinInput('4')">4</button>
+    <button class="pin-key" onclick="pinInput('5')">5</button>
+    <button class="pin-key" onclick="pinInput('6')">6</button>
+    <button class="pin-key" onclick="pinInput('7')">7</button>
+    <button class="pin-key" onclick="pinInput('8')">8</button>
+    <button class="pin-key" onclick="pinInput('9')">9</button>
+    <div class="pin-key pin-empty"></div>
+    <button class="pin-key" onclick="pinInput('0')">0</button>
+    <button class="pin-key pin-del" onclick="pinDelete()">⌫</button>
+  </div>
+  <div class="pin-reset-link" id="pin-reset-link" onclick="resetPin()">Reset PIN</div>
+</div>
 <div id="app">
   <div class="app-header">
     <div>
@@ -161,7 +269,20 @@ select:focus{border-color:#2a4a6a}
     <select id="emp-select"><option value="">&#128100; Who are you?</option></select>
   </div>
   <div class="week-tabs" id="week-tabs"></div>
+  <div id="cmp-bar">
+    <span class="cmp-label">Compare</span>
+    <div id="cmp-chips"></div>
+    <button id="cmp-add-btn" onclick="openCmpSheet()">＋ Add</button>
+  </div>
   <div id="main"></div>
+</div>
+<div id="cmp-backdrop" onclick="closeCmpSheet()"></div>
+<div id="cmp-sheet">
+  <div class="cmp-sheet-hdr">
+    <span class="cmp-sheet-title">Compare with...</span>
+    <button class="cmp-sheet-done" onclick="closeCmpSheet()">Done</button>
+  </div>
+  <div id="cmp-list"></div>
 </div>
 <div id="shift-popup">
   <div id="sp-name" class="sp-name"></div>
@@ -172,6 +293,10 @@ select:focus{border-color:#2a4a6a}
     <i class="ti ti-tool sp-icon"></i><span id="sp-stn-val" class="sp-stn"></span>
   </div>
   <div id="sp-badge" class="sp-badge"></div>
+  <div id="sp-actions" class="sp-actions">
+    <button id="sp-hl-btn" class="sp-action-btn sp-hl"></button>
+    <button id="sp-cmp-btn" class="sp-action-btn sp-cmp"></button>
+  </div>
 </div>
 <script>
 const WEEKS=[
@@ -398,10 +523,11 @@ const fmtM=m=>{const h=Math.floor(m/60),mn=m%60,pm=h>=12,dh=h>12?h-12:h===0?12:h
 const TICKS=[];for(let m=TS;m<=TE;m+=30)TICKS.push(m);
 const HTICKS=TICKS.filter(m=>m%60===0);
 
-let state={view:'week',di:0,me:'',week:2};
+let state={view:'week',di:0,me:'',week:2,cmp:[]};
 function W(){return WEEKS[state.week];}
 function S(){return W().shifts;}
 function D(){return W().days;}
+function goDay(dir){const days=D();state.di=(state.di+dir+days.length)%days.length;render();}
 
 function doLayout(shifts){
   const ss=[...shifts].map(s=>({...s})).sort((a,b)=>toM(a.s)-toM(b.s));
@@ -429,16 +555,16 @@ function el(tag,cls,style){
 }
 
 function buildShift(sh,me,loc){
-  const isMe=sh.name===me,isOp=!!sh.open;
+  const isMe=sh.name===me,isOp=!!sh.open,isCmp=state.cmp.includes(sh.name);
   const top=(toM(sh.s)-TS)*PD+1;
   const ht=Math.max(18,(toM(sh.e)-toM(sh.s))*PD-2);
   const pct=100/sh._n;
-  const cls='shift '+(isMe?'me':isOp?'open':loc);
+  const cls='shift '+(isMe?'me':isCmp?'cmp':isOp?'open':loc);
   const abbrev=sh._n>=4?sh.name.split(' ')[0].slice(0,4):sh._n===3?sh.name.split(' ')[0].slice(0,6):sh.name.split(' ')[0];
   const d=el('div',cls,{position:'absolute',top:top+'px',height:ht+'px',
-    left:`${pct*sh._c}%`,width:`calc(${pct}% - 2px)`,zIndex:isMe?'20':'1'});
+    left:`${pct*sh._c}%`,width:`calc(${pct}% - 2px)`,zIndex:isMe?'20':isCmp?'15':'1'});
   const nm=el('div','shift-name');
-  nm.textContent=isOp?'Open':isMe?`\u2605 ${abbrev}`:abbrev;
+  nm.textContent=isOp?'Open':isMe?`\u2605 ${abbrev}`:isCmp?`\u263a ${abbrev}`:abbrev;
   d.appendChild(nm);
   if(ht>32&&sh.stn){const stn=el('div','shift-stn');stn.textContent=sh.stn;d.appendChild(stn);}
   d.addEventListener('click',e=>{e.stopPropagation();showPopup(sh,d);});
@@ -462,6 +588,13 @@ function renderDay(){
   const amSB=sbS.filter(s=>!s.open&&toM(s.s)<PM).length;
   const pmSB=sbS.filter(s=>!s.open&&toM(s.e)>PM).length;
   const wrap=el('div');
+  // Swipe left/right to navigate days
+  let _tx=0,_ty=0;
+  wrap.addEventListener('touchstart',e=>{_tx=e.touches[0].clientX;_ty=e.touches[0].clientY;},{passive:true});
+  wrap.addEventListener('touchend',e=>{
+    const dx=e.changedTouches[0].clientX-_tx,dy=e.changedTouches[0].clientY-_ty;
+    if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.5) goDay(dx<0?1:-1);
+  },{passive:true});
 
   const strip=el('div','day-strip');
   const back=el('button','back-btn');
@@ -547,14 +680,20 @@ function renderWeek(){
   cols.appendChild(el('div','wk-pmline',{top:(PM-TS)*PW+'px'}));
   days.forEach((d,i)=>{
     const all=shifts.filter(s=>s.date===d.k),myS=all.filter(s=>s.name===state.me);
+    const cmpS=all.filter(s=>state.cmp.includes(s.name));
     const col=el('div','wk-day-col',{height:WH+'px'});
     col.onclick=()=>{state.di=i;state.view='day';render();};
     ['dt','sb'].forEach(loc=>{
       const sub=el('div','wk-sub');
-      all.filter(s=>s.loc===loc&&s.name!==state.me).forEach(s=>{
+      all.filter(s=>s.loc===loc&&s.name!==state.me&&!state.cmp.includes(s.name)).forEach(s=>{
         sub.appendChild(el('div','wk-bar',{top:(toM(s.s)-TS)*PW+'px',
           height:Math.max(1,(toM(s.e)-toM(s.s))*PW)+'px',
           background:loc==='dt'?'rgba(59,130,246,0.2)':'rgba(239,68,68,0.2)'}));
+      });
+      cmpS.filter(s=>s.loc===loc).forEach(s=>{
+        sub.appendChild(el('div','wk-bar',{top:(toM(s.s)-TS)*PW+'px',
+          height:Math.max(2,(toM(s.e)-toM(s.s))*PW)+'px',
+          background:'rgba(34,197,94,0.65)',zIndex:'4'}));
       });
       myS.filter(s=>s.loc===loc).forEach(s=>{
         sub.appendChild(el('div','wk-bar',{top:(toM(s.s)-TS)*PW+'px',
@@ -570,7 +709,8 @@ function renderWeek(){
 
   const leg=el('div','week-legend');
   [['rgba(59,130,246,0.55)','Downtown'],['rgba(239,68,68,0.55)','Snack Bar'],
-   ...(state.me?[['rgba(202,138,4,0.9)',state.me.split(' ')[0]]]:[])
+   ...(state.me?[['rgba(202,138,4,0.9)',state.me.split(' ')[0]]]:[]),
+   ...(state.cmp.length?[['rgba(34,197,94,0.65)',state.cmp.length===1?state.cmp[0].split(' ')[0]:'Friends']]:[])
   ].forEach(([col,lbl])=>{
     const item=el('div','legend-item');
     item.appendChild(el('div','legend-swatch',{background:col}));
@@ -582,24 +722,70 @@ function renderWeek(){
 }
 
 function render(){
+  updateCmpBar();
   document.getElementById('main').innerHTML='';
   document.getElementById('main').appendChild(state.view==='week'?renderWeek():renderDay());
 }
 
 function showPopup(sh,anchor){
   const pop=document.getElementById('shift-popup');
-  const isMe=sh.name===state.me, isOp=!!sh.open, loc=sh.loc;
-  // fill content
+  const isMe=sh.name===state.me,isOp=!!sh.open,isCmp=state.cmp.includes(sh.name),loc=sh.loc;
   document.getElementById('sp-name').textContent=isOp?'Open Shift':sh.name;
-  document.getElementById('sp-name').className='sp-name '+(isMe?'me':isOp?'open':loc);
+  document.getElementById('sp-name').className='sp-name '+(isMe?'me':isCmp?'cmp':isOp?'open':loc);
   document.getElementById('sp-time-val').textContent=`${fmtM(toM(sh.s))} – ${fmtM(toM(sh.e))}`;
   const stnRow=document.getElementById('sp-stn-row');
   const stnVal=document.getElementById('sp-stn-val');
   if(sh.stn){stnVal.textContent=sh.stn;stnRow.style.display='';}
   else stnRow.style.display='none';
   const badge=document.getElementById('sp-badge');
-  badge.className='sp-badge '+(isOp?'open':loc);
+  badge.className='sp-badge '+(isOp?'open':isCmp?'cmp':loc);
   badge.textContent=isOp?'Open':(loc==='dt'?'Downtown':'Snack Bar');
+
+  // Action buttons — only for real employees
+  const actions=document.getElementById('sp-actions');
+  const hlBtn=document.getElementById('sp-hl-btn');
+  const cmpBtn=document.getElementById('sp-cmp-btn');
+  if(isOp){
+    actions.style.display='none';
+  } else {
+    actions.style.display='flex';
+    // Highlight button
+    if(isMe){
+      hlBtn.textContent='★ That\'s you';
+      hlBtn.className='sp-action-btn sp-hl is-me';
+      hlBtn.onclick=null;
+    } else {
+      hlBtn.textContent='★ Highlight me';
+      hlBtn.className='sp-action-btn sp-hl';
+      hlBtn.onclick=e=>{
+        e.stopPropagation();
+        state.me=sh.name;
+        state.cmp=state.cmp.filter(n=>n!==sh.name);
+        // Sync dropdown
+        const sel=document.getElementById('emp-select');
+        if(sel.querySelector(`option[value="${sh.name}"]`)) sel.value=sh.name;
+        updateCmpBar();render();hidePopup();
+      };
+    }
+    // Compare button — hide if this is "me"
+    if(isMe){
+      cmpBtn.style.display='none';
+    } else {
+      cmpBtn.style.display='';
+      const inCmp=state.cmp.includes(sh.name);
+      cmpBtn.textContent=inCmp?'✕ Remove':'☺ Compare';
+      cmpBtn.className='sp-action-btn sp-cmp'+(inCmp?' is-cmp':'');
+      cmpBtn.onclick=e=>{
+        e.stopPropagation();
+        const idx=state.cmp.indexOf(sh.name);
+        if(idx>=0) state.cmp.splice(idx,1); else state.cmp.push(sh.name);
+        const now=state.cmp.includes(sh.name);
+        cmpBtn.textContent=now?'✕ Remove':'☺ Compare';
+        cmpBtn.className='sp-action-btn sp-cmp'+(now?' is-cmp':'');
+        updateCmpBar();render();
+      };
+    }
+  }
   // position
   pop.style.display='block';
   pop.classList.remove('visible');
@@ -624,6 +810,133 @@ function hidePopup(){
   setTimeout(()=>{if(!pop.classList.contains('visible'))pop.style.display='none';},150);
 }
 document.addEventListener('click',hidePopup);
+
+// ── KEYBOARD NAVIGATION ──────────────────────────────────────────────────
+document.addEventListener('keydown',e=>{
+  if(state.view==='day'){
+    if(e.key==='ArrowRight') goDay(1);
+    if(e.key==='ArrowLeft') goDay(-1);
+  }
+});
+
+// ── PIN SCREEN ───────────────────────────────────────────────────────────
+let pinBuf=[],pinTemp='',pinPhase='enter';
+
+function updatePinDots(){
+  for(let i=0;i<4;i++){
+    const d=document.getElementById('pd'+i);
+    d.classList.toggle('filled',i<pinBuf.length);
+    d.classList.remove('error');
+  }
+}
+function pinInput(digit){
+  if(pinBuf.length>=4) return;
+  pinBuf.push(digit);
+  updatePinDots();
+  if(pinBuf.length===4) setTimeout(handlePinComplete,180);
+}
+function pinDelete(){
+  if(pinBuf.length>0){pinBuf.pop();updatePinDots();}
+}
+function handlePinComplete(){
+  const entered=pinBuf.join('');
+  const errMsg=document.getElementById('pin-error-msg');
+  if(pinPhase==='enter'){
+    if(entered===localStorage.getItem('gondolas_pin')){
+      unlockApp();
+    } else {
+      for(let i=0;i<4;i++) document.getElementById('pd'+i).classList.add('error');
+      errMsg.textContent='Incorrect PIN';
+      setTimeout(()=>{pinBuf=[];updatePinDots();errMsg.textContent='';},900);
+    }
+  } else if(pinPhase==='create'){
+    pinTemp=entered;pinPhase='confirm';pinBuf=[];updatePinDots();
+    document.getElementById('pin-subtitle').textContent='Confirm your PIN';
+    errMsg.textContent='';
+  } else if(pinPhase==='confirm'){
+    if(entered===pinTemp){
+      localStorage.setItem('gondolas_pin',entered);
+      unlockApp();
+    } else {
+      for(let i=0;i<4;i++) document.getElementById('pd'+i).classList.add('error');
+      errMsg.textContent="PINs don't match, try again";
+      setTimeout(()=>{
+        pinPhase='create';pinBuf=[];pinTemp='';updatePinDots();
+        document.getElementById('pin-subtitle').textContent='Create a 4-digit PIN';
+        errMsg.textContent='';
+      },1000);
+    }
+  }
+}
+function unlockApp(){
+  const scr=document.getElementById('pin-screen');
+  scr.style.transition='opacity 0.35s';scr.style.opacity='0';
+  setTimeout(()=>{scr.style.display='none';},350);
+}
+function resetPin(){
+  if(!confirm('This will clear your saved PIN. You\'ll create a new one on next open.')) return;
+  localStorage.removeItem('gondolas_pin');
+  pinPhase='create';pinBuf=[];pinTemp='';updatePinDots();
+  document.getElementById('pin-subtitle').textContent='Create a 4-digit PIN';
+  document.getElementById('pin-error-msg').textContent='';
+  document.getElementById('pin-reset-link').style.display='none';
+}
+// Initialize PIN screen on load
+(function(){
+  const stored=localStorage.getItem('gondolas_pin');
+  if(stored){
+    pinPhase='enter';
+    document.getElementById('pin-subtitle').textContent='Enter PIN';
+  } else {
+    pinPhase='create';
+    document.getElementById('pin-subtitle').textContent='Create a 4-digit PIN';
+    document.getElementById('pin-reset-link').style.display='none';
+  }
+})();
+
+// ── COMPARE ──────────────────────────────────────────────────────────────
+function updateCmpBar(){
+  const bar=document.getElementById('cmp-bar');
+  if(!state.me){bar.style.display='none';return;}
+  bar.style.display='flex';
+  const chips=document.getElementById('cmp-chips');
+  chips.innerHTML='';
+  state.cmp.forEach(n=>{
+    const chip=el('div','cmp-chip');
+    chip.textContent=n.split(' ')[0];
+    const x=document.createElement('button');
+    x.className='cmp-chip-x';x.textContent='×';
+    x.onclick=e=>{e.stopPropagation();state.cmp=state.cmp.filter(c=>c!==n);updateCmpBar();render();};
+    chip.appendChild(x);chips.appendChild(chip);
+  });
+}
+function openCmpSheet(){
+  const list=document.getElementById('cmp-list');
+  list.innerHTML='';
+  const emps=[...new Set(S().filter(x=>!x.open).map(x=>x.name))].sort();
+  emps.filter(n=>n!==state.me).forEach(n=>{
+    const isSel=state.cmp.includes(n);
+    const item=el('div','cmp-item'+(isSel?' selected':''));
+    const chk=el('div','cmp-check'+(isSel?' checked':''));
+    const nm=el('div','cmp-name');nm.textContent=n;
+    item.appendChild(chk);item.appendChild(nm);
+    item.onclick=()=>{
+      const idx=state.cmp.indexOf(n);
+      if(idx>=0) state.cmp.splice(idx,1); else state.cmp.push(n);
+      const sel=state.cmp.includes(n);
+      chk.classList.toggle('checked',sel);
+      item.classList.toggle('selected',sel);
+      updateCmpBar();render();
+    };
+    list.appendChild(item);
+  });
+  document.getElementById('cmp-backdrop').classList.add('open');
+  document.getElementById('cmp-sheet').classList.add('open');
+}
+function closeCmpSheet(){
+  document.getElementById('cmp-backdrop').classList.remove('open');
+  document.getElementById('cmp-sheet').classList.remove('open');
+}
 
 function setWeek(wi){
   state.week=wi;
@@ -663,7 +976,7 @@ WEEKS.forEach((wk,i)=>{
   tabsEl.appendChild(btn);
 });
 
-document.getElementById('emp-select').addEventListener('change',e=>{state.me=e.target.value;render();});
+document.getElementById('emp-select').addEventListener('change',e=>{state.me=e.target.value;state.cmp=[];updateCmpBar();render();});
 setWeek(state.week);
 
 // ── Service worker (required for Chrome install button) ───────────────────
