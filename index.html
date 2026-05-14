@@ -952,7 +952,10 @@ function checkPassword(){
     setTimeout(()=>err.textContent='',2000);
   }
 }
-// Allow Enter key to submit
+// Allow Enter key to submit, and auto-unlock the moment "milk" is fully typed
+document.getElementById('pw-input').addEventListener('input',e=>{
+  if(e.target.value.trim().toLowerCase()==='milk') checkPassword();
+});
 document.getElementById('pw-input').addEventListener('keydown',e=>{
   if(e.key==='Enter') checkPassword();
 });
