@@ -1096,7 +1096,7 @@ if('serviceWorker' in navigator){
   const manifest={
     name:'Gondolas Schedule',short_name:'Gondolas',
     start_url:'./',display:'standalone',
-    background_color:'#07101e',theme_color:'#07101e',
+    background_color:'#ffffff',theme_color:'#07101e',
     icons:[{src:logoB64,sizes:'512x512',type:'image/webp',purpose:'any maskable'}]
   };
   const ml=document.createElement('link');
@@ -1104,17 +1104,19 @@ if('serviceWorker' in navigator){
   ml.href=URL.createObjectURL(new Blob([JSON.stringify(manifest)],{type:'application/manifest+json'}));
   document.head.appendChild(ml);
 
-  // Async: draw transparent WEBP centered on dark navy canvas — no pixel tricks needed
+  // Draw transparent WEBP on white square canvas — centered with padding
   const S=512,cv=document.createElement('canvas');
   cv.width=cv.height=S;
   const ctx=cv.getContext('2d');
   const img=new Image();
   img.onload=()=>{
-    ctx.fillStyle='#07101e';
+    ctx.fillStyle='#ffffff';
     ctx.fillRect(0,0,S,S);
-    const pad=S*0.1,maxW=S-pad*2,maxH=S-pad*2;
+    // Maintain aspect ratio, fit within square with generous padding
+    const pad=S*0.12;
+    const maxW=S-pad*2, maxH=S-pad*2;
     const ratio=Math.min(maxW/img.naturalWidth,maxH/img.naturalHeight);
-    const w=img.naturalWidth*ratio,h=img.naturalHeight*ratio;
+    const w=img.naturalWidth*ratio, h=img.naturalHeight*ratio;
     ctx.drawImage(img,(S-w)/2,(S-h)/2,w,h);
     const atl=document.createElement('link');
     atl.rel='apple-touch-icon';
