@@ -4,17 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gondolas Schedule</title>
-<meta name="color-scheme" content="dark">
-<meta name="theme-color" content="#07101e">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Gondolas">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.7.0/dist/tabler-icons.min.css">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-html{background:#07101e;color-scheme:dark}
 body{background:#07101e;color:#dce8f5;font-family:'Outfit',system-ui,sans-serif;min-height:100vh}
 ::-webkit-scrollbar{width:4px;height:4px;background:transparent}
 ::-webkit-scrollbar-thumb{background:#1a2e46;border-radius:2px}
@@ -44,20 +38,6 @@ select:focus{border-color:#2a4a6a}
 .wtab-dn{font-size:9.5px;font-weight:500;color:#2d4a6a;font-family:'JetBrains Mono',monospace;line-height:1}
 .wtab.active .wtab-dl{color:#1e3a5a}
 .wtab.active .wtab-dn{color:#60a5fa}
-.wtab-day.is-today .wtab-dl{color:rgba(234,179,8,0.7)}
-.wtab-day.is-today .wtab-dn{color:#07101e;background:#eab308;border-radius:50%;
-  width:16px;height:16px;display:flex;align-items:center;justify-content:center;
-  font-weight:700;font-size:8.5px;margin:0 auto}
-.wtab-day.is-viewing .wtab-dl{color:rgba(34,197,94,0.7)}
-.wtab-day.is-viewing .wtab-dn{color:#07101e;background:#22c55e;border-radius:50%;
-  width:16px;height:16px;display:flex;align-items:center;justify-content:center;
-  font-weight:700;font-size:8.5px;margin:0 auto}
-.wtab-day.is-viewing-off .wtab-dl{color:rgba(100,130,160,0.5)}
-.wtab-day.is-viewing-off .wtab-dn{color:#c8d8f0;background:rgba(100,130,160,0.25);border-radius:50%;
-  width:16px;height:16px;display:flex;align-items:center;justify-content:center;
-  font-weight:600;font-size:8.5px;margin:0 auto}
-.wtab-day.is-working .wtab-dl{color:rgba(74,222,128,0.65)}
-.wtab-day.is-working .wtab-dn{color:#4ade80;font-weight:700}
 
 /* ── WEEK VIEW ── */
 .week-header{display:flex;border-bottom:1px solid #0a1828}
@@ -67,12 +47,8 @@ select:focus{border-color:#2a4a6a}
 .wk-day-hdr:hover{background:#0d1929}
 .wk-day-hdr.working{background:rgba(202,138,4,0.08)}
 .wk-day-hdr .day-name{font-size:11px;font-weight:500;color:#2d4a6a}
-.wk-day-hdr.working{background:rgba(74,222,128,0.07)}
-.wk-day-hdr.working .day-name{color:#4ade80;font-weight:600}
-.wk-day-hdr.today .day-name{color:#eab308;font-weight:600}
-.wk-day-hdr.today{background:rgba(234,179,8,0.08)}
-.wk-day-hdr .day-dot{width:4px;height:4px;border-radius:50%;background:#4ade80;margin:2px auto 0}
-.today-dot{width:4px;height:4px;border-radius:50%;background:#eab308;margin:2px auto 0;opacity:.8}
+.wk-day-hdr.working .day-name{color:#d97706;font-weight:600}
+.wk-day-hdr .day-dot{width:4px;height:4px;border-radius:50%;background:#ca8a04;margin:2px auto 0}
 .week-grid{display:flex;position:relative}
 .wk-axis{flex-shrink:0;position:relative}
 .wk-axis-lbl{position:absolute;right:4px;font-size:10px;color:#1a3050;
@@ -93,19 +69,18 @@ select:focus{border-color:#2a4a6a}
   border-bottom:1px solid #0a1828;gap:4px;overflow-x:auto;
   background:#050e1a;flex-wrap:nowrap;position:sticky;top:110px;z-index:90}
 .day-strip::-webkit-scrollbar{height:0}
+.day-btn{cursor:pointer;font-size:11px;padding:3px 9px;border-radius:5px;
+  border:1px solid #0e1c2e;background:transparent;color:#2d4a6a;
+  font-family:'Outfit',sans-serif;font-weight:400;flex-shrink:0;white-space:nowrap;
+  transition:background .12s,color .12s}
 .day-btn:hover{background:#0d1929;color:#4a7a9b}
-.day-btn.today{border-color:rgba(234,179,8,0.55);color:#eab308;background:rgba(234,179,8,0.1)}
-.day-btn.active{background:rgba(34,197,94,0.16);border-color:rgba(34,197,94,0.5);
-  color:#22c55e;font-weight:600}
-.day-btn.active-off{background:transparent;border-color:rgba(100,130,160,0.4);color:#4a7a9b;font-weight:600}
-.day-btn.working{border-color:rgba(74,222,128,0.4);color:#4ade80;opacity:.85}
-.back-btn{cursor:pointer;font-size:13px;padding:11px 14px;border-radius:8px;
-  border:1px solid #1a2e46;background:rgba(59,130,246,0.08);color:#3b82f6;
-  font-family:'Outfit',sans-serif;font-weight:600;flex-shrink:0;
-  display:flex;align-items:center;gap:6px;transition:background .12s}
-.back-btn:hover{background:rgba(59,130,246,0.15)}
-.view-title{font-size:16px;font-weight:700;letter-spacing:.3px;
-  color:#d97706;padding:12px 14px 4px;}
+.day-btn.active{background:rgba(202,138,4,0.18);border-color:rgba(202,138,4,0.5);
+  color:#d97706;font-weight:600}
+.day-btn.working{border-color:rgba(202,138,4,0.3);color:#b45309;opacity:.75}
+.back-btn{cursor:pointer;font-size:11px;padding:4px 10px;border-radius:6px;
+  border:1px solid #1a2e46;background:transparent;color:#3b82f6;
+  font-family:'Outfit',sans-serif;font-weight:500;flex-shrink:0;transition:background .12s}
+.back-btn:hover{background:#0d1929}
 .day-title{padding:8px 14px 4px}
 .day-title h2{font-size:16px;font-weight:600;color:#c8d8f0}
 .col-hdrs{display:flex;padding:0 8px 6px;gap:6px}
@@ -133,9 +108,9 @@ select:focus{border-color:#2a4a6a}
 .shift.sb{background:rgba(239,68,68,0.13);border:.5px solid rgba(239,68,68,0.5);border-left:2.5px solid #ef4444}
 .shift.sb .shift-name{color:#fca5a5}
 .shift.sb .shift-stn{color:#f87171}
-.shift.me{background:rgba(74,222,128,0.18);border:.5px solid rgba(74,222,128,0.55);border-left:2.5px solid #4ade80;z-index:20!important}
-.shift.me .shift-name{color:#bbf7d0;font-weight:600}
-.shift.me .shift-stn{color:#86efac}
+.shift.me{background:rgba(202,138,4,0.22);border:.5px solid rgba(202,138,4,0.7);border-left:2.5px solid #ca8a04;z-index:20!important}
+.shift.me .shift-name{color:#fbbf24;font-weight:600}
+.shift.me .shift-stn{color:#fde68a}
 .shift.open{background:rgba(55,65,81,0.15);border:.5px solid rgba(55,65,81,0.4);border-left:2.5px solid #4b5563}
 .shift.open .shift-name{color:#6b7280}
 .shift.open .shift-stn{color:#6b7280}
@@ -149,188 +124,19 @@ select:focus{border-color:#2a4a6a}
 .footer-num{text-align:center}
 .footer-period{font-size:11px;color:#1e3a5a;margin-bottom:2px;font-family:'JetBrains Mono',monospace}
 .footer-val{font-size:28px;font-weight:600;color:#c8d8f0;font-family:'JetBrains Mono',monospace;line-height:1.1;font-variant-numeric:tabular-nums}
-
-/* ── SHIFT POPUP ── */
-#shift-popup{position:fixed;z-index:300;background:#0c1a2e;border:1px solid #1e3a5a;
-  border-radius:10px;padding:11px 14px;min-width:158px;max-width:230px;
-  box-shadow:0 6px 24px rgba(0,0,0,0.6);pointer-events:none;
-  opacity:0;transition:opacity .14s,transform .14s;transform:scale(0.95);display:none}
-#shift-popup.visible{opacity:1;transform:scale(1);pointer-events:auto}
-.sp-name{font-size:13px;font-weight:600;margin-bottom:6px;line-height:1.3}
-.sp-name.dt{color:#93c5fd}
-.sp-name.sb{color:#fca5a5}
-.sp-name.me{color:#bbf7d0}
-.sp-name.open{color:#9ca3af}
-.sp-row{display:flex;align-items:center;gap:6px;margin-top:4px}
-.sp-icon{font-size:11px;color:#1e3a5a;flex-shrink:0;width:14px;text-align:center}
-.sp-text{font-size:11px;color:#4a7a9b;font-family:'JetBrains Mono',monospace;line-height:1.3}
-.sp-stn{font-size:11px;color:#2d5a7a;font-style:italic;line-height:1.3}
-.sp-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;
-  letter-spacing:.5px;padding:2px 7px;border-radius:4px;margin-top:6px}
-.sp-badge.dt{color:#60a5fa;background:rgba(59,130,246,0.12);border:1px solid rgba(59,130,246,0.2)}
-.sp-badge.sb{color:#f87171;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.18)}
-.sp-badge.open{color:#6b7280;background:rgba(75,85,99,0.12);border:1px solid rgba(75,85,99,0.2)}
-.sp-name.cmp{color:#86efac}
-.sp-badge.cmp{color:#22c55e;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25)}
-
-/* ── POPUP ACTION BUTTONS ── */
-.sp-actions{display:flex;gap:6px;margin-top:10px}
-.sp-action-btn{flex:1;padding:7px 4px;border-radius:7px;font-size:11px;font-weight:600;
-  cursor:pointer;font-family:'Outfit',sans-serif;transition:opacity .15s;text-align:center;line-height:1.3}
-.sp-action-btn.sp-hl{background:rgba(74,222,128,0.14);color:#4ade80;border:1px solid rgba(74,222,128,0.4)}
-.sp-action-btn.sp-hl:active{opacity:.7}
-.sp-action-btn.sp-hl.is-me{background:rgba(74,222,128,0.06);color:#22c55e;border-color:rgba(74,222,128,0.2);cursor:default}
-.sp-action-btn.sp-cmp{background:rgba(34,197,94,0.12);color:#86efac;border:1px solid rgba(34,197,94,0.35)}
-.sp-action-btn.sp-cmp:active{opacity:.7}
-.sp-action-btn.sp-cmp.is-cmp{background:rgba(239,68,68,0.1);color:#fca5a5;border:1px solid rgba(239,68,68,0.3)}
-
-/* ── COMPARISON SHIFTS ── */
-.shift.cmp{background:rgba(34,197,94,0.16);border:.5px solid rgba(34,197,94,0.5);border-left:2.5px solid #22c55e;z-index:15!important}
-.shift.cmp .shift-name{color:#86efac;font-weight:600}
-.shift.cmp .shift-stn{color:#4ade80}
-
-/* ── BIGGER DAY BUTTONS ── */
-.day-btn{cursor:pointer;font-size:13px;padding:11px 14px;border-radius:8px;
-  border:1px solid #0e1c2e;background:transparent;color:#2d4a6a;
-  font-family:'Outfit',sans-serif;font-weight:500;flex-shrink:0;white-space:nowrap;
-  transition:background .12s,color .12s}
-
-/* ── COMPARE BAR ── */
-#cmp-bar{display:none;align-items:center;padding:6px 12px;gap:8px;flex-wrap:wrap;
-  border-bottom:1px solid #0a1828;background:#050e1a;min-height:38px}
-.cmp-label{font-size:10px;color:#1e3a5a;font-weight:600;letter-spacing:.5px;white-space:nowrap;text-transform:uppercase}
-#cmp-chips{display:flex;gap:5px;flex-wrap:wrap;flex:1}
-.cmp-chip{display:inline-flex;align-items:center;gap:4px;background:rgba(34,197,94,0.13);
-  border:1px solid rgba(34,197,94,0.35);border-radius:12px;padding:3px 6px 3px 10px;
-  font-size:11px;color:#86efac}
-.cmp-chip-x{background:none;border:none;color:#16a34a;cursor:pointer;font-size:15px;
-  line-height:1;padding:0;margin:0;font-family:sans-serif}
-#cmp-add-btn{background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.3);
-  border-radius:6px;color:#60a5fa;font-size:12px;cursor:pointer;padding:4px 11px;
-  font-family:'Outfit',sans-serif;white-space:nowrap;flex-shrink:0}
-
-/* ── COMPARE SHEET ── */
-#cmp-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:190;
-  opacity:0;pointer-events:none;transition:opacity .25s}
-#cmp-backdrop.open{opacity:1;pointer-events:auto}
-#cmp-sheet{position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;
-  background:#0d1929;border-radius:16px 16px 0 0;border-top:1px solid #1a2e46;
-  z-index:200;transform:translateY(100%);transition:transform .3s ease;max-height:72vh;overflow-y:auto;display:none}
-#cmp-sheet.open{transform:translateY(0);display:block}
-.cmp-sheet-hdr{display:flex;align-items:center;justify-content:space-between;
-  padding:14px 16px;border-bottom:1px solid #0a1828;position:sticky;top:0;background:#0d1929;z-index:1}
-.cmp-sheet-title{font-size:14px;font-weight:600;color:#c8d8f0}
-.cmp-sheet-done{background:rgba(59,130,246,0.12);border:1px solid rgba(59,130,246,0.3);
-  border-radius:8px;color:#60a5fa;font-size:12px;font-weight:600;padding:5px 14px;
-  cursor:pointer;font-family:'Outfit',sans-serif}
-.cmp-item{display:flex;align-items:center;gap:12px;padding:13px 16px;
-  border-bottom:1px solid #0a1828;cursor:pointer;transition:background .1s}
-.cmp-item:active{background:#0a1828}
-.cmp-check{width:18px;height:18px;border-radius:5px;border:2px solid #1e3a5a;
-  flex-shrink:0;transition:all .15s;display:flex;align-items:center;justify-content:center}
-.cmp-check.checked{background:#22c55e;border-color:#22c55e}
-.cmp-check.checked::after{content:'✓';font-size:11px;color:#07101e;font-weight:700}
-.cmp-name{font-size:13px;color:#4a7a9b}
-.cmp-item.selected .cmp-name{color:#86efac;font-weight:500}
-
-/* ── PASSWORD SCREEN ── */
-#pw-screen{position:fixed;inset:0;background:#ffffff;z-index:500;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px}
-#pw-logo{width:260px;max-width:80%;margin-bottom:36px}
-.pw-subtitle{font-size:13px;color:#64748b;margin-bottom:20px;text-align:center}
-#pw-input{width:100%;max-width:240px;background:#1e293b;border:1px solid #334155;border-radius:10px;
-  color:#f1f5f9;font-size:18px;padding:14px 16px;text-align:center;outline:none;
-  font-family:'JetBrains Mono',monospace;letter-spacing:4px;transition:border-color .15s;
-  margin-bottom:10px}
-#pw-input:focus{border-color:#3b82f6}
-#pw-input::placeholder{letter-spacing:1px;font-size:13px;color:#475569;font-family:'Outfit',sans-serif}
-.pw-error{font-size:12px;color:#ef4444;min-height:18px;text-align:center}
-
-/* ── WEEK START PICKER ── */
-#wk-start-btn{background:#0d1929;border:1px solid #1a2e46;border-radius:6px;color:#4a7a9b;
-  font-size:11px;padding:5px 9px;cursor:pointer;display:flex;align-items:center;gap:5px;
-  font-family:'Outfit',sans-serif;flex-shrink:0;white-space:nowrap}
-#wk-start-btn:hover{border-color:#2a4a6a;color:#7aa8d0}
-#wk-start-menu{position:fixed;z-index:150;background:#0c1a2e;border:1px solid #1e3a5a;
-  border-radius:10px;padding:11px 13px;box-shadow:0 6px 24px rgba(0,0,0,0.55);display:none}
-#wk-start-menu.open{display:block}
-.wks-title{font-size:10px;color:#1e3a5a;letter-spacing:.6px;text-transform:uppercase;
-  font-weight:600;margin-bottom:8px}
-.wks-days{display:flex;gap:5px}
-.wks-day{background:#0d1929;border:1px solid #1a2e46;border-radius:5px;color:#2d4a6a;
-  font-size:11px;font-weight:500;padding:6px 8px;cursor:pointer;
-  font-family:'JetBrains Mono',monospace;transition:all .12s}
-.wks-day:hover{background:#1a2e46;color:#7aa8d0}
-.wks-day.active{background:rgba(59,130,246,0.15);border-color:rgba(59,130,246,0.4);color:#60a5fa}
 </style>
 </head>
 <body>
-<div id="pw-screen">
-  <img id="pw-logo" src="" alt="Gondolas">
-  <div class="pw-subtitle">Enter password to continue</div>
-  <input id="pw-input" type="password" placeholder="password" autocomplete="off" autocorrect="off" spellcheck="false">
-  <div class="pw-error" id="pw-error"></div>
-</div>
 <div id="app">
   <div class="app-header">
     <div>
-      <h1>Gondolas Schedule</h1>
+      <h1><i class="ti ti-calendar" aria-hidden="true"></i> Gondolas Schedule</h1>
       <div class="sub" id="week-sub"></div>
     </div>
-    <div style="display:flex;align-items:center;gap:6px">
-      <button id="wk-start-btn" onclick="toggleWkStartMenu(event)" title="Week start day">
-        <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
-          <rect x="1" y="2.5" width="11" height="9.5" rx="1.5"/>
-          <line x1="1" y1="6" x2="12" y2="6"/>
-          <line x1="4" y1="1" x2="4" y2="4"/>
-          <line x1="9" y1="1" x2="9" y2="4"/>
-        </svg>
-        <span id="wk-start-lbl">Mo</span>
-      </button>
-      <select id="emp-select"><option value="">&#128100; Who are you?</option></select>
-    </div>
+    <select id="emp-select"><option value="">&#128100; Who are you?</option></select>
   </div>
   <div class="week-tabs" id="week-tabs"></div>
-  <div id="cmp-bar">
-    <span class="cmp-label">Compare</span>
-    <div id="cmp-chips"></div>
-    <button id="cmp-add-btn" onclick="openCmpSheet()">＋ Add</button>
-  </div>
   <div id="main"></div>
-</div>
-<div id="cmp-backdrop" onclick="closeCmpSheet()"></div>
-<div id="cmp-sheet">
-  <div class="cmp-sheet-hdr">
-    <span class="cmp-sheet-title">Compare with...</span>
-    <button class="cmp-sheet-done" onclick="closeCmpSheet()">Done</button>
-  </div>
-  <div id="cmp-list"></div>
-</div>
-<div id="wk-start-menu">
-  <div class="wks-title">Week starts on</div>
-  <div class="wks-days">
-    <button class="wks-day" onclick="setWeekStart(0)">Mo</button>
-    <button class="wks-day" onclick="setWeekStart(1)">Tu</button>
-    <button class="wks-day" onclick="setWeekStart(2)">We</button>
-    <button class="wks-day" onclick="setWeekStart(3)">Th</button>
-    <button class="wks-day" onclick="setWeekStart(4)">Fr</button>
-    <button class="wks-day" onclick="setWeekStart(5)">Sa</button>
-    <button class="wks-day" onclick="setWeekStart(6)">Su</button>
-  </div>
-</div>
-<div id="shift-popup">
-  <div id="sp-name" class="sp-name"></div>
-  <div id="sp-time" class="sp-row">
-    <svg class="sp-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span id="sp-time-val" class="sp-text"></span>
-  </div>
-  <div id="sp-stn-row" class="sp-row">
-    <svg class="sp-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg><span id="sp-stn-val" class="sp-stn"></span>
-  </div>
-  <div id="sp-badge" class="sp-badge"></div>
-  <div id="sp-actions" class="sp-actions">
-    <button id="sp-hl-btn" class="sp-action-btn sp-hl"></button>
-    <button id="sp-cmp-btn" class="sp-action-btn sp-cmp"></button>
-  </div>
 </div>
 <script>
 const WEEKS=[
@@ -557,37 +363,10 @@ const fmtM=m=>{const h=Math.floor(m/60),mn=m%60,pm=h>=12,dh=h>12?h-12:h===0?12:h
 const TICKS=[];for(let m=TS;m<=TE;m+=30)TICKS.push(m);
 const HTICKS=TICKS.filter(m=>m%60===0);
 
-// Find which week contains today, fallback to latest
-const _todayKey=(()=>{const n=new Date();return(n.getMonth()+1+'').padStart(2,'0')+'-'+(n.getDate()+'').padStart(2,'0');})();
-const _initWeek=(()=>{const i=WEEKS.findIndex(wk=>wk.days.some(d=>d.k===_todayKey));return i>=0?i:WEEKS.length-1;})();
-let state={view:'week',di:0,me:'',week:_initWeek,cmp:[],weekStart:parseInt(localStorage.getItem('gondolas_wkstart')||'0')};
+let state={view:'week',di:0,me:'',week:2};
 function W(){return WEEKS[state.week];}
 function S(){return W().shifts;}
 function D(){return W().days;}
-function goDay(dir){
-  const newDi=state.di+dir;
-  if(newDi<0){
-    // Cross back into previous week's last day
-    if(state.week>0){
-      state.week--;
-      state.di=D().length-1;
-      document.getElementById('week-sub').textContent=W().range;
-    }
-    // At oldest week — do nothing, don't wrap
-  } else if(newDi>=D().length){
-    // Cross forward into next week's first day
-    if(state.week<WEEKS.length-1){
-      state.week++;
-      state.di=0;
-      document.getElementById('week-sub').textContent=W().range;
-    }
-    // At newest week — do nothing, don't wrap
-  } else {
-    state.di=newDi;
-  }
-  render();
-}
-function goWeek(dir){const wi=Math.max(0,Math.min(WEEKS.length-1,state.week+dir));if(wi!==state.week)setWeek(wi);}
 
 function doLayout(shifts){
   const ss=[...shifts].map(s=>({...s})).sort((a,b)=>toM(a.s)-toM(b.s));
@@ -615,21 +394,18 @@ function el(tag,cls,style){
 }
 
 function buildShift(sh,me,loc){
-  const isMe=sh.name===me,isOp=!!sh.open,isCmp=state.cmp.includes(sh.name);
+  const isMe=sh.name===me,isOp=!!sh.open;
   const top=(toM(sh.s)-TS)*PD+1;
   const ht=Math.max(18,(toM(sh.e)-toM(sh.s))*PD-2);
   const pct=100/sh._n;
-  const cls='shift '+(isMe?'me':isCmp?'cmp':isOp?'open':loc);
+  const cls='shift '+(isMe?'me':isOp?'open':loc);
   const abbrev=sh._n>=4?sh.name.split(' ')[0].slice(0,4):sh._n===3?sh.name.split(' ')[0].slice(0,6):sh.name.split(' ')[0];
   const d=el('div',cls,{position:'absolute',top:top+'px',height:ht+'px',
-    left:`${pct*sh._c}%`,width:`calc(${pct}% - 2px)`,zIndex:isMe?'20':isCmp?'15':'1'});
+    left:`${pct*sh._c}%`,width:`calc(${pct}% - 2px)`,zIndex:isMe?'20':'1'});
   const nm=el('div','shift-name');
-  nm.textContent=isOp?'Open':isMe?`\u2605 ${abbrev}`:isCmp?`\u263a ${abbrev}`:abbrev;
+  nm.textContent=isOp?'Open':isMe?`\u2605 ${abbrev}`:abbrev;
   d.appendChild(nm);
   if(ht>32&&sh.stn){const stn=el('div','shift-stn');stn.textContent=sh.stn;d.appendChild(stn);}
-  d.addEventListener('mouseenter',()=>{clearTimeout(_hideTimer);showPopup(sh,d);});
-  d.addEventListener('mouseleave',()=>{if(!_popPinned)_hideTimer=setTimeout(forceHidePopup,250);});
-  d.addEventListener('click',e=>{e.stopPropagation();_popPinned=true;showPopup(sh,d);});
   return d;
 }
 
@@ -645,40 +421,20 @@ function renderDay(){
   const all=shifts.filter(s=>s.date===day.k);
   const dtS=all.filter(s=>s.loc==='dt'),sbS=all.filter(s=>s.loc==='sb');
   const AW=42;
-  const now=new Date();
-  const todayKey=(now.getMonth()+1+'').padStart(2,'0')+'-'+(now.getDate()+'').padStart(2,'0');
   const amDT=dtS.filter(s=>!s.open&&toM(s.s)<PM).length;
   const pmDT=dtS.filter(s=>!s.open&&toM(s.e)>PM).length;
   const amSB=sbS.filter(s=>!s.open&&toM(s.s)<PM).length;
   const pmSB=sbS.filter(s=>!s.open&&toM(s.e)>PM).length;
   const wrap=el('div');
-  const dayViewTitle=el('div','view-title');dayViewTitle.textContent='Day Breakdown';
-  wrap.appendChild(dayViewTitle);
-  // Swipe left/right to navigate days
-  let _tx=0,_ty=0;
-  wrap.addEventListener('touchstart',e=>{_tx=e.touches[0].clientX;_ty=e.touches[0].clientY;},{passive:true});
-  wrap.addEventListener('touchend',e=>{
-    const dx=e.changedTouches[0].clientX-_tx,dy=e.changedTouches[0].clientY-_ty;
-    if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.5) goDay(dx<0?1:-1);
-  },{passive:true});
 
   const strip=el('div','day-strip');
   const back=el('button','back-btn');
-  back.innerHTML='<span style="font-size:16px;line-height:1;margin-right:4px">&#8592;</span><span>Week</span>';
+  back.innerHTML='<i class="ti ti-arrow-left" style="font-size:12px;margin-right:3px"></i>Week';
   back.onclick=()=>{state.view='week';render();};
   strip.appendChild(back);
   days.forEach((d,i)=>{
     const hasMe=shifts.some(s=>s.date===d.k&&s.name===state.me);
-    const isToday=d.k===todayKey;
-    const isActive=i===state.di;
-    let btnCls='day-btn';
-    if(isActive){
-      if(hasMe) btnCls+=' active';           // viewing + working → green
-      else if(isToday) btnCls+=' today';      // viewing today but off → amber
-      else btnCls+=' active-off';             // viewing, not working, not today → grey
-    } else if(isToday) btnCls+=' today';
-    else if(hasMe) btnCls+=' working';
-    const btn=el('button',btnCls);
+    const btn=el('button','day-btn'+(i===state.di?' active':hasMe?' working':''));
     btn.textContent=d.sh;btn.onclick=()=>{state.di=i;render();};
     strip.appendChild(btn);
   });
@@ -690,11 +446,9 @@ function renderDay(){
 
   const hdrs=el('div','col-hdrs');
   hdrs.appendChild(el('div','',{width:AW+'px',flexShrink:'0'}));
-  const pinSvg='<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>';
-  const dropSvg='<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>';
-  [['dt',pinSvg,'Downtown'],['sb',dropSvg,'Snack Bar']].forEach(([loc,ico,lbl])=>{
+  [['dt','ti-map-pin','Downtown'],['sb','ti-droplet','Snack Bar']].forEach(([loc,ico,lbl])=>{
     const h=el('div',`col-hdr ${loc}`);
-    h.innerHTML=ico+lbl.toUpperCase();
+    h.innerHTML=`<i class="ti ${ico}" style="font-size:12px"></i>${lbl.toUpperCase()}`;
     hdrs.appendChild(h);
   });
   wrap.appendChild(hdrs);
@@ -732,31 +486,18 @@ function renderDay(){
 
 function renderWeek(){
   const days=D(),shifts=S();
-  const ws=state.weekStart;
-  const ordDays=ws===0?days:[...days.slice(ws),...days.slice(0,ws)];
   const WH=(TE-TS)*PW,AW=36;
-  const now=new Date();
-  const todayKey=(now.getMonth()+1+'').padStart(2,'0')+'-'+(now.getDate()+'').padStart(2,'0');
   const wrap=el('div');
-  let _tx=0,_ty=0;
-  wrap.addEventListener('touchstart',e=>{_tx=e.touches[0].clientX;_ty=e.touches[0].clientY;},{passive:true});
-  wrap.addEventListener('touchend',e=>{
-    const dx=e.changedTouches[0].clientX-_tx,dy=e.changedTouches[0].clientY-_ty;
-    if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.5) goWeek(dx<0?1:-1);
-  },{passive:true});
-  const wkViewTitle=el('div','view-title');wkViewTitle.textContent='Week at a Glance';wrap.appendChild(wkViewTitle);
-  const hint=el('div','hint');hint.textContent='tap any day · swipe to change week';wrap.appendChild(hint);
+  const hint=el('div','hint');hint.textContent='tap any day to see full schedule';wrap.appendChild(hint);
 
   const hdrRow=el('div','week-header');
   hdrRow.appendChild(el('div','axis-spacer',{width:AW+'px'}));
-  ordDays.forEach(d=>{
+  days.forEach((d,i)=>{
     const hasMe=shifts.some(s=>s.date===d.k&&s.name===state.me);
-    const isToday=d.k===todayKey;
-    const cell=el('div',`wk-day-hdr${hasMe?' working':''}${isToday?' today':''}`);
+    const cell=el('div',`wk-day-hdr${hasMe?' working':''}`);
     const nm=el('div','day-name');nm.textContent=d.sh;cell.appendChild(nm);
     if(hasMe){const dot=el('div','day-dot');cell.appendChild(dot);}
-    if(isToday&&!hasMe){const dot=el('div','today-dot');cell.appendChild(dot);}
-    cell.onclick=()=>{state.di=days.indexOf(d);state.view='day';render();};
+    cell.onclick=()=>{state.di=i;state.view='day';render();};
     hdrRow.appendChild(cell);
   });
   wrap.appendChild(hdrRow);
@@ -768,27 +509,21 @@ function renderWeek(){
   const cols=el('div','week-cols',{height:WH+'px'});
   HTICKS.forEach(m=>cols.appendChild(el('div','wk-gridline',{top:(m-TS)*PW+'px'})));
   cols.appendChild(el('div','wk-pmline',{top:(PM-TS)*PW+'px'}));
-  ordDays.forEach(d=>{
+  days.forEach((d,i)=>{
     const all=shifts.filter(s=>s.date===d.k),myS=all.filter(s=>s.name===state.me);
-    const cmpS=all.filter(s=>state.cmp.includes(s.name));
     const col=el('div','wk-day-col',{height:WH+'px'});
-    col.onclick=()=>{state.di=days.indexOf(d);state.view='day';render();};
+    col.onclick=()=>{state.di=i;state.view='day';render();};
     ['dt','sb'].forEach(loc=>{
       const sub=el('div','wk-sub');
-      all.filter(s=>s.loc===loc&&s.name!==state.me&&!state.cmp.includes(s.name)).forEach(s=>{
+      all.filter(s=>s.loc===loc&&s.name!==state.me).forEach(s=>{
         sub.appendChild(el('div','wk-bar',{top:(toM(s.s)-TS)*PW+'px',
           height:Math.max(1,(toM(s.e)-toM(s.s))*PW)+'px',
           background:loc==='dt'?'rgba(59,130,246,0.2)':'rgba(239,68,68,0.2)'}));
       });
-      cmpS.filter(s=>s.loc===loc).forEach(s=>{
-        sub.appendChild(el('div','wk-bar',{top:(toM(s.s)-TS)*PW+'px',
-          height:Math.max(2,(toM(s.e)-toM(s.s))*PW)+'px',
-          background:'rgba(34,197,94,0.65)',zIndex:'4'}));
-      });
       myS.filter(s=>s.loc===loc).forEach(s=>{
         sub.appendChild(el('div','wk-bar',{top:(toM(s.s)-TS)*PW+'px',
           height:Math.max(2,(toM(s.e)-toM(s.s))*PW)+'px',
-          background:'rgba(74,222,128,0.85)',zIndex:'5'}));
+          background:'rgba(202,138,4,0.9)',zIndex:'5'}));
       });
       col.appendChild(sub);
     });
@@ -799,8 +534,7 @@ function renderWeek(){
 
   const leg=el('div','week-legend');
   [['rgba(59,130,246,0.55)','Downtown'],['rgba(239,68,68,0.55)','Snack Bar'],
-   ...(state.me?[['rgba(74,222,128,0.85)',state.me.split(' ')[0]]]:[]),
-   ...(state.cmp.length?[['rgba(34,197,94,0.65)',state.cmp.length===1?state.cmp[0].split(' ')[0]:'Friends']]:[])
+   ...(state.me?[['rgba(202,138,4,0.9)',state.me.split(' ')[0]]]:[])
   ].forEach(([col,lbl])=>{
     const item=el('div','legend-item');
     item.appendChild(el('div','legend-swatch',{background:col}));
@@ -812,220 +546,8 @@ function renderWeek(){
 }
 
 function render(){
-  updateCmpBar();
-  buildWeekTabs();
   document.getElementById('main').innerHTML='';
   document.getElementById('main').appendChild(state.view==='week'?renderWeek():renderDay());
-}
-
-let _popPinned=false,_hideTimer=null;
-
-function showPopup(sh,anchor){
-  clearTimeout(_hideTimer);
-  const pop=document.getElementById('shift-popup');
-  const isMe=sh.name===state.me,isOp=!!sh.open,isCmp=state.cmp.includes(sh.name),loc=sh.loc;
-  document.getElementById('sp-name').textContent=isOp?'Open Shift':sh.name;
-  document.getElementById('sp-name').className='sp-name '+(isMe?'me':isCmp?'cmp':isOp?'open':loc);
-  document.getElementById('sp-time-val').textContent=`${fmtM(toM(sh.s))} – ${fmtM(toM(sh.e))}`;
-  const stnRow=document.getElementById('sp-stn-row');
-  const stnVal=document.getElementById('sp-stn-val');
-  if(sh.stn){stnVal.textContent=sh.stn;stnRow.style.display='';}
-  else stnRow.style.display='none';
-  const badge=document.getElementById('sp-badge');
-  badge.className='sp-badge '+(isOp?'open':isCmp?'cmp':loc);
-  badge.textContent=isOp?'Open':(loc==='dt'?'Downtown':'Snack Bar');
-
-  const actions=document.getElementById('sp-actions');
-  const hlBtn=document.getElementById('sp-hl-btn');
-  const cmpBtn=document.getElementById('sp-cmp-btn');
-  if(isOp){
-    actions.style.display='none';
-  } else {
-    actions.style.display='flex';
-    if(isMe){
-      hlBtn.textContent='★ That\'s you';
-      hlBtn.className='sp-action-btn sp-hl is-me';
-      hlBtn.onclick=null;
-    } else {
-      hlBtn.textContent='★ Highlight me';
-      hlBtn.className='sp-action-btn sp-hl';
-      hlBtn.onclick=e=>{
-        e.stopPropagation();
-        state.me=sh.name;
-        state.cmp=state.cmp.filter(n=>n!==sh.name);
-        const sel=document.getElementById('emp-select');
-        if(sel.querySelector(`option[value="${sh.name}"]`)) sel.value=sh.name;
-        updateCmpBar();render();forceHidePopup();
-      };
-    }
-    if(isMe){
-      cmpBtn.style.display='none';
-    } else {
-      cmpBtn.style.display='';
-      const inCmp=state.cmp.includes(sh.name);
-      cmpBtn.textContent=inCmp?'✕ Remove':'☺ Compare';
-      cmpBtn.className='sp-action-btn sp-cmp'+(inCmp?' is-cmp':'');
-      cmpBtn.onclick=e=>{
-        e.stopPropagation();
-        const idx=state.cmp.indexOf(sh.name);
-        if(idx>=0) state.cmp.splice(idx,1); else state.cmp.push(sh.name);
-        const now=state.cmp.includes(sh.name);
-        cmpBtn.textContent=now?'✕ Remove':'☺ Compare';
-        cmpBtn.className='sp-action-btn sp-cmp'+(now?' is-cmp':'');
-        updateCmpBar();render();
-      };
-    }
-  }
-
-  // Position: top of popup aligns with top of shift, to the right (or left if no room)
-  pop.style.display='block';
-  pop.classList.remove('visible');
-  requestAnimationFrame(()=>{
-    const r=anchor.getBoundingClientRect();
-    const pw=pop.offsetWidth,ph=pop.offsetHeight;
-    const vw=window.innerWidth,vh=window.innerHeight;
-    let left=r.right+8;
-    if(left+pw>vw-8) left=r.left-pw-8;
-    if(left<8) left=8;
-    let top=r.top;
-    if(top+ph>vh-8) top=vh-ph-8;
-    if(top<8) top=8;
-    pop.style.left=left+'px';
-    pop.style.top=top+'px';
-    pop.classList.add('visible');
-  });
-}
-
-function hidePopup(){
-  // Only hide on hover-out if not pinned
-  if(_popPinned) return;
-  const pop=document.getElementById('shift-popup');
-  pop.classList.remove('visible');
-  setTimeout(()=>{if(!pop.classList.contains('visible'))pop.style.display='none';},150);
-}
-
-function forceHidePopup(){
-  _popPinned=false;
-  const pop=document.getElementById('shift-popup');
-  pop.classList.remove('visible');
-  setTimeout(()=>{if(!pop.classList.contains('visible'))pop.style.display='none';},150);
-}
-
-// Popup hover — keep it open while mouse is inside it
-document.getElementById('shift-popup').addEventListener('mouseenter',()=>clearTimeout(_hideTimer));
-document.getElementById('shift-popup').addEventListener('mouseleave',()=>{if(!_popPinned)_hideTimer=setTimeout(forceHidePopup,250);});
-document.getElementById('shift-popup').addEventListener('click',e=>e.stopPropagation());
-document.addEventListener('click',()=>{
-  document.getElementById('wk-start-menu').classList.remove('open');
-  forceHidePopup();
-});
-
-const WK_DAY_LABELS=['Mo','Tu','We','Th','Fr','Sa','Su'];
-function toggleWkStartMenu(e){
-  e.stopPropagation();
-  const menu=document.getElementById('wk-start-menu');
-  if(menu.classList.contains('open')){menu.classList.remove('open');return;}
-  document.querySelectorAll('.wks-day').forEach((b,i)=>b.classList.toggle('active',i===state.weekStart));
-  const btn=document.getElementById('wk-start-btn');
-  const r=btn.getBoundingClientRect();
-  menu.style.right=(window.innerWidth-r.right)+'px';
-  menu.style.top=(r.bottom+6)+'px';
-  menu.style.left='auto';
-  menu.classList.add('open');
-}
-function setWeekStart(i){
-  state.weekStart=i;
-  localStorage.setItem('gondolas_wkstart',i);
-  document.getElementById('wk-start-lbl').textContent=WK_DAY_LABELS[i];
-  document.querySelectorAll('.wks-day').forEach((b,j)=>b.classList.toggle('active',j===i));
-  document.getElementById('wk-start-menu').classList.remove('open');
-  if(state.view==='week') render();
-}
-// Init button label
-document.getElementById('wk-start-lbl').textContent=WK_DAY_LABELS[state.weekStart];
-
-// ── KEYBOARD NAVIGATION ──────────────────────────────────────────────────
-document.addEventListener('keydown',e=>{
-  if(state.view==='day'){
-    if(e.key==='ArrowRight') goDay(1);
-    if(e.key==='ArrowLeft') goDay(-1);
-  } else if(state.view==='week'){
-    if(e.key==='ArrowRight') goWeek(1);
-    if(e.key==='ArrowLeft') goWeek(-1);
-  }
-});
-
-// ── PASSWORD SCREEN ──────────────────────────────────────────────────────
-function checkPassword(){
-  const val=document.getElementById('pw-input').value.trim().toLowerCase();
-  const err=document.getElementById('pw-error');
-  if(val==='milk'){
-    const scr=document.getElementById('pw-screen');
-    scr.style.transition='opacity 0.3s';scr.style.opacity='0';
-    setTimeout(()=>{scr.style.display='none';},300);
-  } else {
-    err.textContent='Wrong password — try again';
-    document.getElementById('pw-input').value='';
-    setTimeout(()=>err.textContent='',2000);
-  }
-}
-// Allow Enter key to submit, and auto-unlock the moment "milk" is fully typed
-document.getElementById('pw-input').addEventListener('input',e=>{
-  if(e.target.value.trim().toLowerCase()==='milk') checkPassword();
-});
-document.getElementById('pw-input').addEventListener('keydown',e=>{
-  if(e.key==='Enter') checkPassword();
-});
-
-// ── COMPARE ──────────────────────────────────────────────────────────────
-function updateCmpBar(){
-  const bar=document.getElementById('cmp-bar');
-  if(!state.me){bar.style.display='none';return;}
-  bar.style.display='flex';
-  const chips=document.getElementById('cmp-chips');
-  chips.innerHTML='';
-  state.cmp.forEach(n=>{
-    const chip=el('div','cmp-chip');
-    chip.textContent=n.split(' ')[0];
-    const x=document.createElement('button');
-    x.className='cmp-chip-x';x.textContent='×';
-    x.onclick=e=>{e.stopPropagation();state.cmp=state.cmp.filter(c=>c!==n);updateCmpBar();render();};
-    chip.appendChild(x);chips.appendChild(chip);
-  });
-}
-function openCmpSheet(){
-  const list=document.getElementById('cmp-list');
-  list.innerHTML='';
-  const emps=[...new Set(S().filter(x=>!x.open).map(x=>x.name))].sort();
-  emps.filter(n=>n!==state.me).forEach(n=>{
-    const isSel=state.cmp.includes(n);
-    const item=el('div','cmp-item'+(isSel?' selected':''));
-    const chk=el('div','cmp-check'+(isSel?' checked':''));
-    const nm=el('div','cmp-name');nm.textContent=n;
-    item.appendChild(chk);item.appendChild(nm);
-    item.onclick=()=>{
-      const idx=state.cmp.indexOf(n);
-      if(idx>=0) state.cmp.splice(idx,1); else state.cmp.push(n);
-      const sel=state.cmp.includes(n);
-      chk.classList.toggle('checked',sel);
-      item.classList.toggle('selected',sel);
-      updateCmpBar();render();
-    };
-    list.appendChild(item);
-  });
-  const sheet=document.getElementById('cmp-sheet');
-  sheet.style.display='block';
-  requestAnimationFrame(()=>{
-    document.getElementById('cmp-backdrop').classList.add('open');
-    sheet.classList.add('open');
-  });
-}
-function closeCmpSheet(){
-  const sheet=document.getElementById('cmp-sheet');
-  const backdrop=document.getElementById('cmp-backdrop');
-  backdrop.classList.remove('open');
-  sheet.classList.remove('open');
-  setTimeout(()=>{sheet.style.display='none';},300);
 }
 
 function setWeek(wi){
@@ -1033,6 +555,7 @@ function setWeek(wi){
   state.view='week';
   state.di=0;
   document.getElementById('week-sub').textContent=W().range;
+  document.querySelectorAll('.wtab').forEach((b,i)=>b.classList.toggle('active',i===wi));
   // Rebuild dropdown, keep state.me selected if they work this week
   const prev=state.me;
   const sel=document.getElementById('emp-select');
@@ -1049,84 +572,24 @@ function setWeek(wi){
 }
 
 // Build calendar-style week tabs
-function buildWeekTabs(){
-  const now=new Date();
-  const todayKey=(now.getMonth()+1+'').padStart(2,'0')+'-'+(now.getDate()+'').padStart(2,'0');
-  const viewingKey=state.view==='day'?D()[state.di].k:null;
-  const tabsEl=document.getElementById('week-tabs');
-  tabsEl.innerHTML='';
-  WEEKS.forEach((wk,i)=>{
-    const btn=el('button','wtab'+(i===state.week?' active':''));
-    const mo=el('div','wtab-month');mo.textContent=wk.month;btn.appendChild(mo);
-    const daysRow=el('div','wtab-days');
-    wk.calDays.forEach((cd,j)=>{
-      const dayKey=wk.days[j].k;
-      const isWorkingDay=state.me?wk.shifts.some(s=>s.date===dayKey&&s.name===state.me):false;
-      const isViewing=dayKey===viewingKey;
-      const isToday=!isViewing&&dayKey===todayKey;
-      const isWorking=!isViewing&&!isToday&&isWorkingDay;
-      let dayCls='wtab-day';
-      if(isViewing) dayCls+=isWorkingDay?' is-viewing':' is-viewing-off';
-      else if(isToday) dayCls+=' is-today';
-      else if(isWorking) dayCls+=' is-working';
-      const day=el('div',dayCls);
-      const dl=el('div','wtab-dl');dl.textContent=cd.l;day.appendChild(dl);
-      const dn=el('div','wtab-dn');dn.textContent=String(cd.n);day.appendChild(dn);
-      daysRow.appendChild(day);
-    });
-    btn.appendChild(daysRow);
-    btn.onclick=()=>setWeek(i);
-    tabsEl.appendChild(btn);
+const tabsEl=document.getElementById('week-tabs');
+WEEKS.forEach((wk,i)=>{
+  const btn=el('button','wtab'+(i===state.week?' active':''));
+  const mo=el('div','wtab-month');mo.textContent=wk.month;btn.appendChild(mo);
+  const daysRow=el('div','wtab-days');
+  wk.calDays.forEach(cd=>{
+    const day=el('div','wtab-day');
+    const dl=el('div','wtab-dl');dl.textContent=cd.l;day.appendChild(dl);
+    const dn=el('div','wtab-dn');dn.textContent=String(cd.n);day.appendChild(dn);
+    daysRow.appendChild(day);
   });
-}
+  btn.appendChild(daysRow);
+  btn.onclick=()=>setWeek(i);
+  tabsEl.appendChild(btn);
+});
 
-document.getElementById('emp-select').addEventListener('change',e=>{state.me=e.target.value;state.cmp=[];updateCmpBar();render();});
+document.getElementById('emp-select').addEventListener('change',e=>{state.me=e.target.value;render();});
 setWeek(state.week);
-
-// ── Service worker (required for Chrome install button) ───────────────────
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('./sw.js').catch(()=>{});
-}
-
-// ── PWA manifest + home screen icon ──────────────────────────────────────
-(function(){
-  const logoB64='data:image/webp;base64,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';
-  document.getElementById('pw-logo').src=logoB64;
-
-  // Generate white-background icon, then build manifest with that PNG
-  const S=512,cv=document.createElement('canvas');
-  cv.width=cv.height=S;
-  const ctx=cv.getContext('2d');
-  const img=new Image();
-  img.onload=()=>{
-    ctx.fillStyle='#ffffff';
-    ctx.fillRect(0,0,S,S);
-    const pad=S*0.12,maxW=S-pad*2,maxH=S-pad*2;
-    const ratio=Math.min(maxW/img.naturalWidth,maxH/img.naturalHeight);
-    const w=img.naturalWidth*ratio,h=img.naturalHeight*ratio;
-    ctx.drawImage(img,(S-w)/2,(S-h)/2,w,h);
-    // Apple touch icon (iOS home screen)
-    const atl=document.createElement('link');
-    atl.rel='apple-touch-icon';
-    atl.href=cv.toDataURL('image/png');
-    document.head.appendChild(atl);
-    // Android manifest — use the canvas PNG so it has a white background
-    cv.toBlob(iconBlob=>{
-      const iconUrl=URL.createObjectURL(iconBlob);
-      const manifest={
-        name:'Gondolas Schedule',short_name:'Gondolas',
-        start_url:'./',display:'standalone',
-        background_color:'#ffffff',theme_color:'#07101e',
-        icons:[{src:iconUrl,sizes:'512x512',type:'image/png',purpose:'any maskable'}]
-      };
-      const ml=document.createElement('link');
-      ml.rel='manifest';
-      ml.href=URL.createObjectURL(new Blob([JSON.stringify(manifest)],{type:'application/manifest+json'}));
-      document.head.appendChild(ml);
-    },'image/png');
-  };
-  img.src=logoB64;
-})();
 </script>
 </body>
 </html>
