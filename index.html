@@ -106,8 +106,11 @@ select:focus{border-color:#2a4a6a}
 .back-btn:hover{background:rgba(59,130,246,0.15)}
 .view-title{font-size:16px;font-weight:700;letter-spacing:.3px;
   color:#d97706;padding:12px 14px 4px;}
-.day-title{padding:8px 14px 4px}
+.day-title{padding:8px 14px 4px;display:flex;align-items:center;gap:10px}
 .day-title h2{font-size:16px;font-weight:600;color:#c8d8f0}
+.day-hrs-badge{font-size:13px;font-weight:700;color:#fbbf24;
+  background:rgba(202,138,4,0.15);border:1px solid rgba(202,138,4,0.35);
+  border-radius:6px;padding:2px 9px;font-family:'JetBrains Mono',monospace}
 .col-hdrs{display:flex;padding:0 8px 6px;gap:6px}
 .col-hdr{flex:1;text-align:center;font-size:11px;font-weight:600;letter-spacing:.7px;
   padding:4px 0;border-radius:4px;display:flex;align-items:center;justify-content:center;gap:4px}
@@ -162,7 +165,10 @@ select:focus{border-color:#2a4a6a}
 .sp-name.me{color:#bbf7d0}
 .sp-name.open{color:#9ca3af}
 .sp-row{display:flex;align-items:center;gap:6px;margin-top:4px}
-.sp-icon{font-size:11px;color:#1e3a5a;flex-shrink:0;width:14px;text-align:center}
+.sp-chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px}
+.sp-chip{font-size:11px;padding:2px 7px;border-radius:4px;font-family:'JetBrains Mono',monospace;
+  background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);color:#7aa8d0;white-space:nowrap}
+.sp-chip.hrs{color:#fbbf24;background:rgba(202,138,4,0.12);border-color:rgba(202,138,4,0.25)}
 .sp-text{font-size:11px;color:#4a7a9b;font-family:'JetBrains Mono',monospace;line-height:1.3}
 .sp-stn{font-size:11px;color:#2d5a7a;font-style:italic;line-height:1.3}
 .sp-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;
@@ -334,12 +340,7 @@ select:focus{border-color:#2a4a6a}
 </div>
 <div id="shift-popup">
   <div id="sp-name" class="sp-name"></div>
-  <div id="sp-time" class="sp-row">
-    <svg class="sp-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span id="sp-time-val" class="sp-text"></span>
-  </div>
-  <div id="sp-stn-row" class="sp-row">
-    <svg class="sp-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg><span id="sp-stn-val" class="sp-stn"></span>
-  </div>
+  <div id="sp-chips" class="sp-chips"></div>
   <div id="sp-badge" class="sp-badge"></div>
   <div id="sp-actions" class="sp-actions">
     <button id="sp-hl-btn" class="sp-action-btn sp-hl"></button>
@@ -840,11 +841,12 @@ function showPopup(sh,anchor){
   const isMe=sh.name===state.me,isOp=!!sh.open,isCmp=state.cmp.includes(sh.name),loc=sh.loc;
   document.getElementById('sp-name').textContent=isOp?'Open Shift':sh.name;
   document.getElementById('sp-name').className='sp-name '+(isMe?'me':isCmp?'cmp':isOp?'open':loc);
-  document.getElementById('sp-time-val').textContent=`${fmtM(toM(sh.s))} – ${fmtM(toM(sh.e))}`;
-  const stnRow=document.getElementById('sp-stn-row');
-  const stnVal=document.getElementById('sp-stn-val');
-  if(sh.stn){stnVal.textContent=sh.stn;stnRow.style.display='';}
-  else stnRow.style.display='none';
+  const hrs=(toM(sh.e)-toM(sh.s))/60;
+  const hrsLabel=hrs%1===0?hrs+'h shift':hrs.toFixed(1)+'h shift';
+  const chips=document.getElementById('sp-chips');
+  chips.innerHTML=`<span class="sp-chip">${fmtM(toM(sh.s))} – ${fmtM(toM(sh.e))}</span>`+
+    (sh.stn?`<span class="sp-chip">${sh.stn}</span>`:'')+
+    `<span class="sp-chip hrs">${hrsLabel}</span>`;
   const badge=document.getElementById('sp-badge');
   badge.className='sp-badge '+(isOp?'open':isCmp?'cmp':loc);
   badge.textContent=isOp?'Open':(loc==='dt'?'Downtown':'Snack Bar');
@@ -1047,9 +1049,12 @@ function updateNextShift(){
   const dayLbl=dayObj?dayObj.sh:'';
   const isToday=next.date===todayKey;
   const loc=next.loc==='dt'?'Downtown':'Snack Bar';
+  const hrs=(toM(next.e)-toM(next.s))/60;
+  const hrsLabel=hrs%1===0?hrs+'h shift':hrs.toFixed(1)+'h shift';
   bar.innerHTML=`<span class="ns-label">${isToday?'Today':'Next shift'}</span>`+
     `<span class="ns-content">${isToday?'':dayLbl+' · '}${fmtM(toM(next.s))} – ${fmtM(toM(next.e))} · ${loc}</span>`+
-    (next.stn?`<span class="ns-stn">${next.stn}</span>`:'');
+    (next.stn?`<span class="ns-stn">${next.stn}</span>`:'')+
+    `<span class="ns-stn">· ${hrsLabel}</span>`;
 }
 function updateCmpBar(){
   updateNextShift();
