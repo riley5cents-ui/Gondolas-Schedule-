@@ -1026,21 +1026,27 @@ function myWeekHours(){
 }
 function updateNextShift(){
   const bar=document.getElementById('next-shift-bar');
-  if(!state.me){bar.style.display='none';return;}
+  bar.style.display='flex';
+  if(!state.me){
+    const wkShifts=WEEKS[state.week].shifts.filter(s=>!s.open);
+    const totalShifts=wkShifts.length;
+    const totalHrs=wkShifts.reduce((t,s)=>t+(toM(s.e)-toM(s.s))/60,0);
+    bar.innerHTML=`<span class="ns-label">This week</span>`+
+      `<span class="ns-content">${totalShifts} shifts · ${totalHrs%1===0?totalHrs:totalHrs.toFixed(1)} hrs scheduled</span>`;
+    return;
+  }
   const now=new Date();
   const todayKey=String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
   const nowM=now.getHours()*60+now.getMinutes();
   const allMine=WEEKS.flatMap(w=>w.shifts.filter(s=>s.name===state.me&&!s.open))
     .sort((a,b)=>a.date!==b.date?a.date.localeCompare(b.date):toM(a.s)-toM(b.s));
   const next=allMine.find(s=>s.date>todayKey||(s.date===todayKey&&toM(s.e)>nowM));
-  if(!next){bar.style.display='none';return;}
-  const dayNames={Mon:'Mon',Tue:'Tue',Wed:'Wed',Thu:'Thu',Fri:'Fri',Sat:'Sat',Sun:'Sun'};
+  if(!next){bar.innerHTML=`<span class="ns-label">Next shift</span><span class="ns-content">None scheduled</span>`;return;}
   const allDays=WEEKS.flatMap(w=>w.days);
   const dayObj=allDays.find(d=>d.k===next.date);
   const dayLbl=dayObj?dayObj.sh:'';
   const isToday=next.date===todayKey;
   const loc=next.loc==='dt'?'Downtown':'Snack Bar';
-  bar.style.display='flex';
   bar.innerHTML=`<span class="ns-label">${isToday?'Today':'Next shift'}</span>`+
     `<span class="ns-content">${isToday?'':dayLbl+' · '}${fmtM(toM(next.s))} – ${fmtM(toM(next.e))} · ${loc}</span>`+
     (next.stn?`<span class="ns-stn">${next.stn}</span>`:'');
@@ -1117,6 +1123,7 @@ function setWeek(wi){
     sel.appendChild(o);
   });
   // Keep state.me regardless so highlight persists across weeks
+  updateCmpBar();
   render();
 }
 
