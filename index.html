@@ -211,6 +211,14 @@ select:focus{border-color:#2a4a6a}
 #cal-export-btn{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);
   border-radius:6px;color:#4ade80;font-size:12px;cursor:pointer;padding:4px 11px;
   font-family:'Outfit',sans-serif;white-space:nowrap;flex-shrink:0}
+#next-shift-bar{display:none;padding:8px 14px;background:rgba(202,138,4,0.07);
+  border-bottom:1px solid rgba(202,138,4,0.12);gap:6px;align-items:center;flex-wrap:wrap}
+#next-shift-bar .ns-label{font-size:11px;color:#92400e;font-weight:600;letter-spacing:.4px;text-transform:uppercase;flex-shrink:0}
+#next-shift-bar .ns-content{font-size:12px;color:#fbbf24;font-weight:500}
+#next-shift-bar .ns-stn{font-size:11px;color:#d97706;margin-left:4px;opacity:.8}
+#hrs-badge{font-size:12px;color:#d97706;font-weight:600;white-space:nowrap;
+  background:rgba(202,138,4,0.1);border:1px solid rgba(202,138,4,0.25);
+  border-radius:5px;padding:3px 8px;margin-left:auto;flex-shrink:0}
 
 /* ── COMPARE SHEET ── */
 #cmp-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:190;
@@ -294,10 +302,12 @@ select:focus{border-color:#2a4a6a}
     </div>
   </div>
   <div class="week-tabs" id="week-tabs"></div>
+  <div id="next-shift-bar"></div>
   <div id="cmp-bar">
     <span class="cmp-label">Compare</span>
     <div id="cmp-chips"></div>
     <button id="cmp-add-btn" onclick="openCmpSheet()">＋ Add</button>
+    <span id="hrs-badge"></span>
     <button id="cal-export-btn" onclick="exportICS()">&#128197; Export shifts</button>
   </div>
   <div id="main"></div>
@@ -1008,7 +1018,39 @@ function exportICS(){
   a.download=`gondolas-${state.me.split(' ')[0].toLowerCase()}-${wk.label.replace(/\s/g,'')}.ics`;
   a.click();
 }
+function myWeekHours(){
+  if(!state.me) return 0;
+  return WEEKS[state.week].shifts
+    .filter(s=>s.name===state.me&&!s.open)
+    .reduce((t,s)=>t+(toM(s.e)-toM(s.s))/60,0);
+}
+function updateNextShift(){
+  const bar=document.getElementById('next-shift-bar');
+  if(!state.me){bar.style.display='none';return;}
+  const now=new Date();
+  const todayKey=String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+  const nowM=now.getHours()*60+now.getMinutes();
+  const allMine=WEEKS.flatMap(w=>w.shifts.filter(s=>s.name===state.me&&!s.open))
+    .sort((a,b)=>a.date!==b.date?a.date.localeCompare(b.date):toM(a.s)-toM(b.s));
+  const next=allMine.find(s=>s.date>todayKey||(s.date===todayKey&&toM(s.e)>nowM));
+  if(!next){bar.style.display='none';return;}
+  const dayNames={Mon:'Mon',Tue:'Tue',Wed:'Wed',Thu:'Thu',Fri:'Fri',Sat:'Sat',Sun:'Sun'};
+  const allDays=WEEKS.flatMap(w=>w.days);
+  const dayObj=allDays.find(d=>d.k===next.date);
+  const dayLbl=dayObj?dayObj.sh:'';
+  const isToday=next.date===todayKey;
+  const loc=next.loc==='dt'?'Downtown':'Snack Bar';
+  bar.style.display='flex';
+  bar.innerHTML=`<span class="ns-label">${isToday?'Today':'Next shift'}</span>`+
+    `<span class="ns-content">${isToday?'':dayLbl+' · '}${fmtM(toM(next.s))} – ${fmtM(toM(next.e))} · ${loc}</span>`+
+    (next.stn?`<span class="ns-stn">${next.stn}</span>`:'');
+}
 function updateCmpBar(){
+  updateNextShift();
+  const hrs=myWeekHours();
+  const hb=document.getElementById('hrs-badge');
+  hb.style.display=state.me?'inline-block':'none';
+  hb.textContent=state.me?hrs%1===0?hrs+'h this week':hrs.toFixed(1)+'h this week':'';
   const bar=document.getElementById('cmp-bar');
   if(!state.me){bar.style.display='none';return;}
   bar.style.display='flex';
