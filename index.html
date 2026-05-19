@@ -30,8 +30,10 @@ select:focus{border-color:#2a4a6a}
 
 /* ── WEEK TABS (calendar style) ── */
 .week-tabs{display:flex;gap:6px;padding:8px 12px;border-bottom:1px solid #0a1828;
-  background:#050e1a;position:sticky;top:52px;z-index:95}
-.wtab{flex:1;padding:6px 2px 7px;border-radius:8px;border:1px solid #1a2e46;
+  background:#050e1a;position:sticky;top:52px;z-index:95;
+  overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap}
+.week-tabs::-webkit-scrollbar{height:0}
+.wtab{flex-shrink:0;width:calc(50vw - 18px);max-width:200px;padding:6px 2px 7px;border-radius:8px;border:1px solid #1a2e46;
   background:transparent;cursor:pointer;transition:background .15s,border-color .15s;text-align:center}
 .wtab:hover:not(.active){background:#0a1626;border-color:#243c5a}
 .wtab.active{background:rgba(59,130,246,0.09);border-color:rgba(59,130,246,0.32)}
@@ -563,6 +565,118 @@ const WEEKS=[
       {id:78,date:'05-24',name:'Jayson Hill',       s:'15:30',e:'20:30',loc:'dt',stn:'Grill'},
     ]
   }
+  ,{
+    label:'May 25–31',range:'May 25 – 31, 2026',month:'MAY',
+    calDays:[{l:'M',n:25},{l:'T',n:26},{l:'W',n:27},{l:'T',n:28},{l:'F',n:29},{l:'S',n:30},{l:'S',n:31}],
+    days:[
+      {k:'05-25',sh:'Mon',lg:'Monday, May 25'},
+      {k:'05-26',sh:'Tue',lg:'Tuesday, May 26'},
+      {k:'05-27',sh:'Wed',lg:'Wednesday, May 27'},
+      {k:'05-28',sh:'Thu',lg:'Thursday, May 28'},
+      {k:'05-29',sh:'Fri',lg:'Friday, May 29'},
+      {k:'05-30',sh:'Sat',lg:'Saturday, May 30'},
+      {k:'05-31',sh:'Sun',lg:'Sunday, May 31'},
+    ],
+    shifts:[
+      // Monday May 25
+      {id:79, date:'05-25',name:'Jayson Hill',       s:'10:00',e:'15:30',loc:'dt',stn:'Prep+Fryer'},
+      {id:80, date:'05-25',name:'Meadow Ingraldi',   s:'10:30',e:'20:30',loc:'dt',stn:'Front'},
+      {id:81, date:'05-25',name:'Riley Nicholls',    s:'10:30',e:'15:30',loc:'dt',stn:'Grill'},
+      {id:82, date:'05-25',name:'Adam Jorgenson',    s:'10:30',e:'13:00',loc:'sb',stn:'Grill'},
+      {id:83, date:'05-25',name:'Nick Haggett',      s:'10:30',e:'15:30',loc:'sb',stn:'Prep'},
+      {id:84, date:'05-25',name:'Asialyn Gillen',    s:'11:00',e:'20:30',loc:'sb',stn:'Front'},
+      {id:85, date:'05-25',name:'Grace Lowell',      s:'11:00',e:'20:30',loc:'sb',stn:'Creemee'},
+      {id:86, date:'05-25',name:'Haley Haman',       s:'11:00',e:'15:30',loc:'sb',stn:''},
+      {id:87, date:'05-25',name:'Erin Cochran',      s:'11:00',e:'20:30',loc:'sb',stn:'Creemee/Float'},
+      {id:88, date:'05-25',name:'Louis Ferris',      s:'11:00',e:'15:30',loc:'sb',stn:''},
+      {id:89, date:'05-25',name:'Liam Burbank',      s:'15:30',e:'20:30',loc:'sb',stn:''},
+      {id:90, date:'05-25',name:'Open Shift',        s:'15:30',e:'20:30',loc:'dt',stn:'Grill',    open:1},
+      {id:91, date:'05-25',name:'Open Shift',        s:'15:30',e:'20:30',loc:'dt',stn:'Fryer',    open:1},
+      // Tuesday May 26
+      {id:92, date:'05-26',name:'Jayson Hill',       s:'10:00',e:'15:30',loc:'dt',stn:'Prep+Fryer'},
+      {id:93, date:'05-26',name:'Riley Nicholls',    s:'10:30',e:'15:30',loc:'dt',stn:'Grill'},
+      {id:94, date:'05-26',name:'Claire Phillips',   s:'10:30',e:'20:30',loc:'dt',stn:'Front/Fryer'},
+      {id:95, date:'05-26',name:'Adam Jorgenson',    s:'10:30',e:'13:00',loc:'sb',stn:'Grill'},
+      {id:96, date:'05-26',name:'Nick Haggett',      s:'10:30',e:'15:30',loc:'sb',stn:'Prep'},
+      {id:97, date:'05-26',name:'Haley Haman',       s:'11:00',e:'15:30',loc:'sb',stn:''},
+      {id:98, date:'05-26',name:'Open Shift',        s:'11:00',e:'15:30',loc:'sb',stn:'Front/Creemee',open:1},
+      {id:99, date:'05-26',name:'Louis Ferris',      s:'11:00',e:'15:30',loc:'sb',stn:''},
+      {id:100,date:'05-26',name:'Open Shift',        s:'15:30',e:'20:30',loc:'dt',stn:'Grill',    open:1},
+      {id:101,date:'05-26',name:'Meadow Ingraldi',   s:'15:30',e:'20:30',loc:'dt',stn:'Front'},
+      {id:102,date:'05-26',name:'Asialyn Gillen',    s:'15:30',e:'20:30',loc:'sb',stn:'Front'},
+      {id:103,date:'05-26',name:'Sam Goodell',       s:'15:30',e:'20:30',loc:'sb',stn:'Grill'},
+      {id:104,date:'05-26',name:'Hadley Butterfield',s:'15:30',e:'20:30',loc:'sb',stn:'Creemee/Float'},
+      {id:105,date:'05-26',name:'Raffi Wein',        s:'15:30',e:'20:30',loc:'sb',stn:'Fryer'},
+      // Wednesday May 27
+      {id:106,date:'05-27',name:'Jayson Hill',       s:'10:00',e:'15:30',loc:'dt',stn:'Prep/Fryer'},
+      {id:107,date:'05-27',name:'Mike Maetke',       s:'10:30',e:'20:30',loc:'dt',stn:'Grill'},
+      {id:108,date:'05-27',name:'Nick Haggett',      s:'10:30',e:'15:30',loc:'sb',stn:'Prep'},
+      {id:109,date:'05-27',name:'Meadow Ingraldi',   s:'10:30',e:'20:30',loc:'dt',stn:'Front'},
+      {id:110,date:'05-27',name:'Adam Jorgenson',    s:'10:30',e:'13:00',loc:'sb',stn:'Grill'},
+      {id:111,date:'05-27',name:'Avianna Wein',      s:'11:00',e:'15:30',loc:'sb',stn:'Front/Creemee'},
+      {id:112,date:'05-27',name:'Open Shift',        s:'15:30',e:'20:30',loc:'dt',stn:'Fryer',    open:1},
+      {id:113,date:'05-27',name:'Autumn Vize',       s:'15:30',e:'20:30',loc:'sb',stn:'Creemee'},
+      {id:114,date:'05-27',name:'Alex Whitley',      s:'15:30',e:'20:30',loc:'sb',stn:'Fryer'},
+      {id:115,date:'05-27',name:'Grace Lowell',      s:'15:30',e:'20:30',loc:'sb',stn:'Creemee/Float'},
+      {id:116,date:'05-27',name:'Joria Benjamin',    s:'15:30',e:'20:30',loc:'sb',stn:'Front'},
+      {id:117,date:'05-27',name:'Raffi Wein',        s:'15:30',e:'20:30',loc:'sb',stn:'Grill'},
+      // Thursday May 28
+      {id:118,date:'05-28',name:'Jayson Hill',       s:'10:00',e:'15:30',loc:'dt',stn:'Fryer'},
+      {id:119,date:'05-28',name:'Meadow Ingraldi',   s:'10:30',e:'15:30',loc:'dt',stn:'Front'},
+      {id:120,date:'05-28',name:'Mike Maetke',       s:'10:30',e:'20:30',loc:'dt',stn:'Fryer'},
+      {id:121,date:'05-28',name:'Adam Jorgenson',    s:'10:30',e:'13:00',loc:'sb',stn:'Grill'},
+      {id:122,date:'05-28',name:'Nick Haggett',      s:'10:30',e:'15:30',loc:'sb',stn:'Prep'},
+      {id:123,date:'05-28',name:'Haley Haman',       s:'11:00',e:'15:30',loc:'sb',stn:''},
+      {id:124,date:'05-28',name:'Louis Ferris',      s:'11:00',e:'15:30',loc:'sb',stn:''},
+      {id:125,date:'05-28',name:'Open Shift',        s:'11:00',e:'15:30',loc:'sb',stn:'Front/Creemee',open:1},
+      {id:126,date:'05-28',name:'Open Shift',        s:'15:30',e:'20:30',loc:'dt',stn:'Fryer',    open:1},
+      {id:127,date:'05-28',name:'Claire Phillips',   s:'15:30',e:'20:30',loc:'dt',stn:'Front'},
+      {id:128,date:'05-28',name:'Sam Goodell',       s:'15:30',e:'20:30',loc:'sb',stn:'Grill'},
+      {id:129,date:'05-28',name:'Joria Benjamin',    s:'15:30',e:'20:30',loc:'sb',stn:'Creemee'},
+      {id:130,date:'05-28',name:'Raffi Wein',        s:'15:30',e:'20:30',loc:'sb',stn:'Fryer'},
+      {id:131,date:'05-28',name:'Vanessa Severcool', s:'15:30',e:'20:30',loc:'sb',stn:'Creemee/Float'},
+      {id:132,date:'05-28',name:'Asialyn Gillen',    s:'15:30',e:'20:30',loc:'sb',stn:'Front'},
+      // Friday May 29
+      {id:133,date:'05-29',name:'Jayson Hill',       s:'10:00',e:'15:30',loc:'dt',stn:'Fryer/Prep'},
+      {id:134,date:'05-29',name:'Nick Haggett',      s:'10:30',e:'15:30',loc:'sb',stn:'Prep'},
+      {id:135,date:'05-29',name:'Riley Nicholls',    s:'10:30',e:'15:30',loc:'dt',stn:'Front'},
+      {id:136,date:'05-29',name:'Melinda Demar',     s:'10:30',e:'20:30',loc:'dt',stn:'Grill'},
+      {id:137,date:'05-29',name:'Open Shift',        s:'11:00',e:'15:30',loc:'sb',stn:'Front/Creemee',open:1},
+      {id:138,date:'05-29',name:'Zab Whitlock',      s:'11:00',e:'15:30',loc:'sb',stn:'Expo'},
+      {id:139,date:'05-29',name:'Louis Ferris',      s:'11:00',e:'20:30',loc:'sb',stn:''},
+      {id:140,date:'05-29',name:'Haley Haman',       s:'11:00',e:'20:30',loc:'sb',stn:''},
+      {id:141,date:'05-29',name:'Mike Maetke',       s:'15:30',e:'20:30',loc:'dt',stn:'Fryer'},
+      {id:142,date:'05-29',name:'Erin Cochran',      s:'15:30',e:'20:30',loc:'sb',stn:'Creemee/Float'},
+      {id:143,date:'05-29',name:'Claire Phillips',   s:'15:30',e:'20:30',loc:'dt',stn:'Front'},
+      {id:144,date:'05-29',name:'Liam Burbank',      s:'15:30',e:'20:30',loc:'sb',stn:'Expo/Prep'},
+      {id:145,date:'05-29',name:'Asialyn Gillen',    s:'15:30',e:'20:30',loc:'sb',stn:'Front'},
+      {id:146,date:'05-29',name:'Grace Lowell',      s:'15:30',e:'20:30',loc:'sb',stn:'Creemee'},
+      // Saturday May 30
+      {id:147,date:'05-30',name:'Melinda Demar',     s:'10:00',e:'20:30',loc:'dt',stn:'Prep/Grill'},
+      {id:148,date:'05-30',name:'Mike Maetke',       s:'10:30',e:'20:30',loc:'dt',stn:'Fryer'},
+      {id:149,date:'05-30',name:'Meadow Ingraldi',   s:'10:30',e:'20:30',loc:'dt',stn:'Front'},
+      {id:150,date:'05-30',name:'Louis Ferris',      s:'11:00',e:'20:30',loc:'sb',stn:''},
+      {id:151,date:'05-30',name:'Open Shift',        s:'11:00',e:'15:30',loc:'sb',stn:'Creemee',   open:1},
+      {id:152,date:'05-30',name:'Alex Whitley',      s:'11:00',e:'20:30',loc:'sb',stn:'Expo'},
+      {id:153,date:'05-30',name:'Haley Haman',       s:'11:00',e:'20:30',loc:'sb',stn:''},
+      {id:154,date:'05-30',name:'Open Shift',        s:'11:00',e:'15:30',loc:'sb',stn:'Creemee',   open:1},
+      {id:155,date:'05-30',name:'Grace Lowell',      s:'11:00',e:'15:30',loc:'sb',stn:'Creemee'},
+      {id:156,date:'05-30',name:'Open Shift',        s:'15:30',e:'20:30',loc:'sb',stn:'Front',     open:1},
+      {id:157,date:'05-30',name:'Claire Phillips',   s:'15:30',e:'20:30',loc:'dt',stn:'Expo'},
+      {id:158,date:'05-30',name:'Open Shift',        s:'15:30',e:'20:30',loc:'sb',stn:'Creemee',   open:1},
+      // Sunday May 31
+      {id:159,date:'05-31',name:'Melinda Demar',     s:'10:00',e:'20:30',loc:'dt',stn:'Prep/Grill'},
+      {id:160,date:'05-31',name:'Riley Nicholls',    s:'10:30',e:'15:30',loc:'dt',stn:'Fryer'},
+      {id:161,date:'05-31',name:'Claire Phillips',   s:'10:30',e:'20:30',loc:'dt',stn:'Front'},
+      {id:162,date:'05-31',name:'Louis Ferris',      s:'11:00',e:'20:30',loc:'sb',stn:''},
+      {id:163,date:'05-31',name:'Alex Whitley',      s:'11:00',e:'20:30',loc:'sb',stn:'Expo'},
+      {id:164,date:'05-31',name:'Asialyn Gillen',    s:'11:00',e:'20:30',loc:'sb',stn:'Front'},
+      {id:165,date:'05-31',name:'Haley Haman',       s:'11:00',e:'20:30',loc:'sb',stn:''},
+      {id:166,date:'05-31',name:'Erin Cochran',      s:'11:00',e:'20:30',loc:'sb',stn:'Creemee/Float'},
+      {id:167,date:'05-31',name:'Grace Lowell',      s:'11:00',e:'20:30',loc:'sb',stn:'Creemee'},
+      {id:168,date:'05-31',name:'Jayson Hill',       s:'15:30',e:'20:30',loc:'dt',stn:'Fryer'},
+    ]
+  }
 ];
 
 const TS=570,TE=1260,PD=1.3,PW=0.52,PM=930;
@@ -576,6 +690,7 @@ const HTICKS=TICKS.filter(m=>m%60===0);
 const _todayKey=(()=>{const n=new Date();return(n.getMonth()+1+'').padStart(2,'0')+'-'+(n.getDate()+'').padStart(2,'0');})();
 const _initWeek=(()=>{const i=WEEKS.findIndex(wk=>wk.days.some(d=>d.k===_todayKey));return i>=0?i:WEEKS.length-1;})();
 let state={view:'week',di:0,me:'',week:_initWeek,cmp:[],weekStart:parseInt(localStorage.getItem('gondolas_wkstart')||'0')};
+const AUTH_VER='May25-31-2026'; // bump this each week to force re-auth on new deploys
 function W(){return WEEKS[state.week];}
 function S(){return W().shifts;}
 function D(){return W().days;}
@@ -976,6 +1091,7 @@ function checkPassword(){
   const val=document.getElementById('pw-input').value.trim().toLowerCase();
   const err=document.getElementById('pw-error');
   if(val==='milk'){
+    localStorage.setItem('gondolas_auth',AUTH_VER);
     const scr=document.getElementById('pw-screen');
     scr.style.transition='opacity 0.3s';scr.style.opacity='0';
     setTimeout(()=>{scr.style.display='none';},300);
@@ -1162,9 +1278,34 @@ function buildWeekTabs(){
     btn.onclick=()=>setWeek(i);
     tabsEl.appendChild(btn);
   });
+  // Scroll active tab into view
+  const activeTab=tabsEl.querySelector('.wtab.active');
+  if(activeTab) tabsEl.scrollLeft=activeTab.offsetLeft-tabsEl.offsetWidth/2+activeTab.offsetWidth/2;
 }
 
-document.getElementById('emp-select').addEventListener('change',e=>{state.me=e.target.value;state.cmp=[];updateCmpBar();render();});
+document.getElementById('emp-select').addEventListener('change',e=>{
+  state.me=e.target.value;
+  state.cmp=[];
+  if(state.me) localStorage.setItem('gondolas_me',state.me);
+  else localStorage.removeItem('gondolas_me');
+  updateCmpBar();render();
+});
+
+// Restore saved employee
+const _savedMe=localStorage.getItem('gondolas_me');
+if(_savedMe){
+  const sel=document.getElementById('emp-select');
+  const opt=[...sel.options].find(o=>o.value===_savedMe);
+  if(opt){opt.selected=true;state.me=_savedMe;updateCmpBar();}
+}
+
+// Skip password screen if already authenticated on this device for this version
+if(localStorage.getItem('gondolas_auth')===AUTH_VER){
+  document.getElementById('pw-screen').style.display='none';
+} else {
+  document.getElementById('pw-input').focus();
+}
+render();
 setWeek(state.week);
 
 // ── Service worker (required for Chrome install button) ───────────────────
