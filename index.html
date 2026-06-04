@@ -333,6 +333,10 @@ select{background:#0d1929;border:1px solid #1a2e46;color:#7aa8d0;font-size:11px;
 <button class="day-edge-btn" id="day-next-edge">&#8250;</button>
 <script>
 
+// Former employees: kept in historical schedule data, but hidden from the
+// "Who are you?" picker and the compare list since they're no longer staff.
+const FORMER_EMPLOYEES=new Set(['Melinda Demar']);
+
 const GONDOLAS_WEEKS=[
   {
     label:'May 4–10',range:'May 4 – 10, 2026',month:'MAY',
@@ -699,19 +703,19 @@ const GONDOLAS_WEEKS=[
       {id:189,date:'06-04',name:'Matt Dubee',         s:'15:30',e:'20:30',loc:'dt',stn:''},
       // Friday Jun 5
       {id:190,date:'06-05',name:'Jayson Hill',        s:'10:00',e:'15:30',loc:'dt',stn:'Prep/Front'},
-      {id:191,date:'06-05',name:'Melinda Demar',      s:'10:30',e:'20:30',loc:'dt',stn:''},
+      {id:272,date:'06-05',name:'Adam Jorgenson',     s:'10:30',e:'20:30',loc:'dt',stn:''},
       {id:192,date:'06-05',name:'Mike Maetke',        s:'10:30',e:'20:30',loc:'dt',stn:''},
       {id:193,date:'06-05',name:'Claire Phillips',    s:'15:30',e:'20:30',loc:'dt',stn:'Expo'},
       {id:194,date:'06-05',name:'Meadow Ingraldi',    s:'15:30',e:'20:30',loc:'dt',stn:'Front'},
       // Saturday Jun 6
       {id:195,date:'06-06',name:'Jayson Hill',        s:'10:00',e:'15:30',loc:'dt',stn:'Front'},
       {id:196,date:'06-06',name:'Mike Maetke',        s:'10:30',e:'20:30',loc:'dt',stn:''},
-      {id:197,date:'06-06',name:'Melinda Demar',      s:'10:30',e:'20:30',loc:'dt',stn:''},
+      {id:273,date:'06-06',name:'Adam Jorgenson',     s:'10:30',e:'20:30',loc:'dt',stn:''},
       {id:198,date:'06-06',name:'Claire Phillips',    s:'15:30',e:'20:30',loc:'dt',stn:'Front'},
       // Sunday Jun 7
       {id:172,date:'06-07',name:'Riley Nicholls',    s:'10:30',e:'20:30',loc:'dt',stn:'Grill'},
       {id:199,date:'06-07',name:'Claire Phillips',    s:'10:30',e:'20:30',loc:'dt',stn:''},
-      {id:200,date:'06-07',name:'Melinda Demar',      s:'10:30',e:'20:30',loc:'dt',stn:''},
+      {id:274,date:'06-07',name:'Adam Jorgenson',     s:'10:30',e:'20:30',loc:'dt',stn:''},
       // ── Snack Bar Jun 1 ──
       {id:229,date:'06-01',name:'Nick Haggett',        s:'10:30',e:'15:30',loc:'sb',stn:''},
       {id:230,date:'06-01',name:'Haley Haman',          s:'11:00',e:'15:30',loc:'sb',stn:''},
@@ -803,12 +807,12 @@ const GONDOLAS_WEEKS=[
       // Friday Jun 12
       {id:220,date:'06-12',name:'Jayson Hill',        s:'10:00',e:'15:30',loc:'dt',stn:'Prep/Front'},
       {id:221,date:'06-12',name:'Mike Maetke',        s:'10:30',e:'20:30',loc:'dt',stn:''},
-      {id:222,date:'06-12',name:'Melinda Demar',      s:'10:30',e:'20:30',loc:'dt',stn:''},
+      {id:222,date:'06-12',name:'Adam Jorgenson',     s:'10:30',e:'20:30',loc:'dt',stn:''},
       {id:223,date:'06-12',name:'Claire Phillips',    s:'15:30',e:'20:30',loc:'dt',stn:'Expo'},
       {id:224,date:'06-12',name:'Meadow Ingraldi',    s:'15:30',e:'20:30',loc:'dt',stn:'Front'},
       // Saturday Jun 13
       {id:225,date:'06-13',name:'Jayson Hill',        s:'10:00',e:'15:30',loc:'dt',stn:'Front'},
-      {id:226,date:'06-13',name:'Melinda Demar',      s:'10:30',e:'20:30',loc:'dt',stn:''},
+      {id:226,date:'06-13',name:'Adam Jorgenson',     s:'10:30',e:'20:30',loc:'dt',stn:''},
       {id:227,date:'06-13',name:'Mike Maetke',        s:'10:30',e:'20:30',loc:'dt',stn:''},
       {id:228,date:'06-13',name:'Claire Phillips',    s:'15:30',e:'20:30',loc:'dt',stn:'Front'},
       // Sunday Jun 14
@@ -1400,7 +1404,7 @@ function updateCmpBar(){
 // ── COMPARE SHEET ─────────────────────────────────────────────────────────
 function openCmpSheet(){
   const list=document.getElementById('cmp-list');list.innerHTML='';
-  const emps=[...new Set(GONDOLAS_WEEKS[state.week].shifts.filter(x=>!x.open).map(x=>x.name))].sort();
+  const emps=[...new Set(GONDOLAS_WEEKS[state.week].shifts.filter(x=>!x.open&&!FORMER_EMPLOYEES.has(x.name)).map(x=>x.name))].sort();
   emps.filter(n=>n!==(state.me||'')).forEach(n=>{
     const item=el('div','cmp-list-item'+(st.cmp.includes(n)?' selected':''));
     const nm=el('div','cmp-item-name');nm.textContent=n;item.appendChild(nm);
@@ -1458,7 +1462,7 @@ function populateDropdown(){
   const sel=document.getElementById('emp-select');
   const prev=state.me||'';
   sel.innerHTML='<option value="">&#128100; Who are you?</option>';
-  const emps=[...new Set(GONDOLAS_WEEKS[state.week].shifts.filter(x=>!x.open).map(x=>x.name))].sort();
+  const emps=[...new Set(GONDOLAS_WEEKS[state.week].shifts.filter(x=>!x.open&&!FORMER_EMPLOYEES.has(x.name)).map(x=>x.name))].sort();
   emps.forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent=n;if(n===prev)o.selected=true;sel.appendChild(o);});
 }
 document.getElementById('emp-select').addEventListener('change',e=>{
